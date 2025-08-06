@@ -1,49 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Fitness MVP</title>
-  <meta charset="UTF-8">
+  <!-- Load React and ReactDOM from CDNs -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
     h1 { color: #333; }
-    #workouts, #barbers { margin-top: 20px; }
-    button { margin-top: 5px; }
+    h2 { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Fitness Training MVP</h1>
-  <div id="workouts">
-    <h2>Workouts</h2>
-    <ul id="workout-list"></ul>
-  </div>
-  <div id="barbers">
-    <h2>Barbers</h2>
-    <ul id="barber-list"></ul>
-  </div>
-  <script>
-    // Fetch workouts
-    fetch('/api/workouts')
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById('workout-list');
-        data.forEach(w => {
-          const li = document.createElement('li');
-          li.textContent = w.name + ' - ' + w.duration + ' - ' + w.description;
-          list.appendChild(li);
-        });
-      });
+  <div id="root"></div>
+  <!-- React code using Babel transpilation -->
+  <script type="text/babel">
+    function App() {
+      const [workouts, setWorkouts] = React.useState([]);
+      const [barbers, setBarbers] = React.useState([]);
 
-    // Fetch barbers
-    fetch('/api/barbers')
-      .then(res => res.json())
-      .then(data => {
-        const list = document.getElementById('barber-list');
-        data.forEach(b => {
-          const li = document.createElement('li');
-          li.textContent = b.name + ' (' + b.location + ') - ' + b.price;
-          list.appendChild(li);
-        });
-      });
+      React.useEffect(() => {
+        fetch('/api/workouts')
+          .then(res => res.json())
+          .then(setWorkouts);
+
+        fetch('/api/barbers')
+          .then(res => res.json())
+          .then(setBarbers);
+      }, []);
+
+      return (
+        <div>
+          <h1>Fitness MVP</h1>
+          <h2>Workouts</h2>
+          <ul>
+            {workouts.map(w => (
+              <li key={w.id}>{w.name} – {w.description}</li>
+            ))}
+          </ul>
+          <h2>Barbers</h2>
+          <ul>
+            {barbers.map(b => (
+              <li key={b.id}>{b.name} – {b.price}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
