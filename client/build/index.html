@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fitness MVP</title>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    #workouts, #barbers { margin-top: 20px; }
+    button { margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Fitness Training MVP</h1>
+  <div id="workouts">
+    <h2>Workouts</h2>
+    <ul id="workout-list"></ul>
+  </div>
+  <div id="barbers">
+    <h2>Barbers</h2>
+    <ul id="barber-list"></ul>
+  </div>
+  <script>
+    // Fetch workouts
+    fetch('/api/workouts')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('workout-list');
+        data.forEach(w => {
+          const li = document.createElement('li');
+          li.textContent = w.name + ' - ' + w.duration + ' - ' + w.description;
+          list.appendChild(li);
+        });
+      });
+
+    // Fetch barbers
+    fetch('/api/barbers')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('barber-list');
+        data.forEach(b => {
+          const li = document.createElement('li');
+          li.textContent = b.name + ' (' + b.location + ') - ' + b.price;
+          list.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>
