@@ -1,6 +1,60 @@
 "use client"
 
 import React, {useCallback, useState} from 'react';
+
+// TypeScript declarations for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  maxAlternatives: number;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onstart: () => void;
+  onend: () => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  start(): void;
+  stop(): void;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+declare const SpeechRecognition: {
+  prototype: SpeechRecognition;
+  new(): SpeechRecognition;
+};
 import {
     Activity,
     Award,
@@ -100,29 +154,134 @@ const DEFAULT_WORKOUTS = [
 function useVoiceRecognition(onCommand: (command: string) => void) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  const [isSupported, setIsSupported] = useState(false);
 
-  const startListening = useCallback(() => {
-    setIsListening(true);
-    setTranscript('');
-    
-    // Simulate voice recognition
-    const commands = [
-      'Start morning workout',
-      'Show my progress', 
-      'Check my habits',
-      'Show analytics'
-    ];
-    const randomCommand = commands[Math.floor(Math.random() * commands.length)];
-    
-    setTimeout(() => {
-      setTranscript(randomCommand);
-      onCommand(randomCommand);
-      setIsListening(false);
-      setTimeout(() => setTranscript(''), 3000);
-    }, 2000);
+  // Initialize speech recognition on mount
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (SpeechRecognition) {
+        const recognitionInstance = new SpeechRecognition();
+
+        // Configure recognition settings
+        recognitionInstance.continuous = false;
+        recognitionInstance.interimResults = true;
+        recognitionInstance.lang = 'en-US';
+        recognitionInstance.maxAlternatives = 1;
+
+        // Handle recognition results
+        recognitionInstance.onresult = (event) => {
+          let finalTranscript = '';
+          let interimTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          // Update transcript with interim results for real-time feedback
+          setTranscript(finalTranscript || interimTranscript);
+
+          // Process final command
+          if (finalTranscript) {
+            onCommand(finalTranscript.trim());
+            setTimeout(() => setTranscript(''), 3000);
+          }
+        };
+
+        // Handle recognition start
+        recognitionInstance.onstart = () => {
+          setIsListening(true);
+          setTranscript('');
+        };
+
+        // Handle recognition end
+        recognitionInstance.onend = () => {
+          setIsListening(false);
+        };
+
+        // Handle recognition errors
+        recognitionInstance.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+
+          let errorMessage = 'Voice recognition error occurred.';
+          switch (event.error) {
+            case 'not-allowed':
+              errorMessage = 'Microphone access denied. Please allow microphone permissions.';
+              break;
+            case 'no-speech':
+              errorMessage = 'No speech detected. Please try again.';
+              break;
+            case 'network':
+              errorMessage = 'Network error. Please check your connection.';
+              break;
+            case 'audio-capture':
+              errorMessage = 'Microphone not found. Please check your audio device.';
+              break;
+            default:
+              errorMessage = `Speech recognition error: ${event.error}`;
+          }
+
+          setTranscript(errorMessage);
+          setTimeout(() => setTranscript(''), 3000);
+        };
+
+        setRecognition(recognitionInstance);
+        setIsSupported(true);
+      } else {
+        setIsSupported(false);
+        console.warn('Speech recognition not supported in this browser');
+      }
+    }
   }, [onCommand]);
 
-  return { isListening, transcript, startListening };
+  const startListening = useCallback(() => {
+    if (!isSupported) {
+      setTranscript('Speech recognition not supported in this browser');
+      setTimeout(() => setTranscript(''), 3000);
+      return;
+    }
+
+    if (!recognition) {
+      setTranscript('Speech recognition not initialized');
+      setTimeout(() => setTranscript(''), 3000);
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    try {
+      recognition.start();
+    } catch (error) {
+      console.error('Error starting speech recognition:', error);
+      setTranscript('Failed to start voice recognition');
+      setTimeout(() => setTranscript(''), 3000);
+    }
+  }, [recognition, isListening, isSupported]);
+
+  const stopListening = useCallback(() => {
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+  }, [recognition, isListening]);
+
+  return { 
+    isListening, 
+    transcript, 
+    startListening, 
+    stopListening, 
+    isSupported 
+  };
 }
 
 interface WelcomeScreenProps {
@@ -132,9 +291,10 @@ interface WelcomeScreenProps {
     aiResponse: string;
     onSignup: () => void;
     onGuest: () => void;
+    isSupported: boolean;
 }
 
-const WelcomeScreen = ({ isListening, transcript, startListening, aiResponse, onSignup, onGuest } : WelcomeScreenProps) => {
+const WelcomeScreen = ({ isListening, transcript, startListening, aiResponse, onSignup, onGuest, isSupported } : WelcomeScreenProps) => {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
       <div className="absolute inset-0">
@@ -180,17 +340,27 @@ const WelcomeScreen = ({ isListening, transcript, startListening, aiResponse, on
             )}
           </button>
           <h2 className="text-3xl font-bold mb-4">
-            {isListening ? 'Listening...' : 'Say "Sign up" or "Guest mode"'}
+            {!isSupported 
+              ? 'Voice not supported in this browser' 
+              : isListening 
+                ? 'Listening...' 
+                : 'Say "Sign up" or "Guest mode"'
+            }
           </h2>
           <p className="text-gray-400 text-lg">
-            {isListening ? 'Tell me how you would like to get started...' : 'Tap to talk or use the buttons below'}
+            {!isSupported 
+              ? 'Please use Chrome, Safari, or Edge for voice features' 
+              : isListening 
+                ? 'Tell me how you would like to get started...' 
+                : 'Tap to talk or use the buttons below'
+            }
           </p>
         </div>
 
         {transcript && (
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-8 max-w-lg mx-auto">
             <p className="text-sm text-gray-400 mb-2">You said:</p>
-            <p className="text-xl font-semibold text-center">"{transcript}"</p>
+            <p className="text-xl font-semibold text-center">&ldquo;{transcript}&#34;</p>
           </div>
         )}
 
@@ -338,6 +508,7 @@ interface VoiceHomeScreenProps {
   startListening: () => void;
   aiResponse: string;
   setCurrentView: (view: string) => void;
+  isSupported: boolean;
 }
 
 const VoiceHomeScreen = ({
@@ -347,7 +518,8 @@ const VoiceHomeScreen = ({
   isListening,
   startListening,
   aiResponse,
-  setCurrentView
+  setCurrentView,
+  isSupported
 }: VoiceHomeScreenProps) => {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
@@ -484,16 +656,26 @@ const VoiceHomeScreen = ({
         </div>
 
         <h2 className="text-2xl font-bold mb-3">
-          {isListening ? 'Listening...' : 'Voice Command Ready'}
+          {!isSupported 
+            ? 'Voice Not Supported' 
+            : isListening 
+              ? 'Listening...' 
+              : 'Voice Command Ready'
+          }
         </h2>
         <p className="text-gray-400 text-center max-w-sm mx-auto mb-8">
-          {isListening ? "I'm listening for your command..." : "Say 'start workout', 'show progress', or tap below"}
+          {!isSupported 
+            ? 'Please use Chrome, Safari, or Edge for voice features' 
+            : isListening 
+              ? "I'm listening for your command..." 
+              : "Say 'start workout', 'show progress', or tap below"
+          }
         </p>
 
         {transcript && (
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-6 max-w-lg mx-auto">
             <p className="text-sm text-gray-400 mb-2">You said:</p>
-            <p className="text-lg font-semibold text-center">"{transcript}"</p>
+            <p className="text-lg font-semibold text-center">&#34;{transcript}&#34;</p>
           </div>
         )}
 
@@ -941,7 +1123,7 @@ export default function ProtonicFitnessApp() {
     }
   }, []);
 
-  const { isListening, transcript, startListening } = useVoiceRecognition(onVoiceCommand);
+  const { isListening, transcript, startListening, isSupported } = useVoiceRecognition(onVoiceCommand);
 
   const handleSignup = () => {
     setCurrentView('signup');
@@ -966,6 +1148,7 @@ export default function ProtonicFitnessApp() {
         aiResponse={aiResponse}
         onSignup={handleSignup}
         onGuest={handleGuest}
+        isSupported={isSupported}
       />
     );
   }
@@ -984,6 +1167,7 @@ export default function ProtonicFitnessApp() {
         startListening={startListening}
         aiResponse={aiResponse}
         setCurrentView={setCurrentView}
+        isSupported={isSupported}
       />
     );
   }
