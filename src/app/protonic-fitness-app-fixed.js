@@ -14,17 +14,7 @@ import {
     Target,
     BarChart3,
     Camera,
-    X,
-    Play,
-    Pause,
-    RotateCcw,
-    Users,
-    Calendar,
-    TrendingUp,
-    Star,
-    CheckCircle,
-    Timer,
-    MessageCircle
+    X
 } from 'lucide-react';
 
 const DEFAULT_CHALLENGES = [
@@ -37,9 +27,7 @@ const DEFAULT_CHALLENGES = [
         participants: 127,
         creator: 'Alex Chen',
         progress: 12,
-        daysRemaining: 18,
-        reward: 500,
-        difficulty: 'Medium'
+        daysRemaining: 18
     },
     {
         id: 2,
@@ -50,22 +38,7 @@ const DEFAULT_CHALLENGES = [
         participants: 89,
         creator: 'Sarah K.',
         progress: 5,
-        daysRemaining: 9,
-        reward: 300,
-        difficulty: 'Easy'
-    },
-    {
-        id: 3,
-        title: 'Flexibility Master',
-        description: '15-minute daily stretching routine for 21 days',
-        type: 'flexibility',
-        duration: '21 days',
-        participants: 64,
-        creator: 'Yoga Mike',
-        progress: 0,
-        daysRemaining: 21,
-        reward: 400,
-        difficulty: 'Easy'
+        daysRemaining: 9
     }
 ];
 
@@ -75,27 +48,14 @@ const DEFAULT_HABITS = [
         name: 'Morning Routine',
         description: 'Wake up at 6 AM and exercise',
         progress: 85,
-        streak: 12,
-        bestStreak: 18,
-        totalDays: 45
+        streak: 12
     },
     {
         id: 2,
         name: 'Quit Stress Eating',
         description: 'Stop eating when stressed',
         progress: 60,
-        streak: 7,
-        bestStreak: 12,
-        totalDays: 30
-    },
-    {
-        id: 3,
-        name: 'Evening Meditation',
-        description: '10 minutes before bed',
-        progress: 40,
-        streak: 3,
-        bestStreak: 8,
-        totalDays: 15
+        streak: 7
     }
 ];
 
@@ -106,10 +66,7 @@ const DEFAULT_TRAINERS = [
         specialty: 'Strength Training',
         rating: 4.9,
         available: true,
-        nextAvailable: 'Today 3:00 PM',
-        price: '$80/hr',
-        sessions: 156,
-        image: '👩‍⚕️'
+        nextAvailable: 'Today 3:00 PM'
     },
     {
         id: 2,
@@ -117,21 +74,7 @@ const DEFAULT_TRAINERS = [
         specialty: 'HIIT Training',
         rating: 4.8,
         available: true,
-        nextAvailable: 'Today 4:30 PM',
-        price: '$65/hr',
-        sessions: 203,
-        image: '💪'
-    },
-    {
-        id: 3,
-        name: 'Elena Rodriguez',
-        specialty: 'Yoga & Mindfulness',
-        rating: 4.9,
-        available: false,
-        nextAvailable: 'Tomorrow 9:00 AM',
-        price: '$55/hr',
-        sessions: 189,
-        image: '🧘‍♀️'
+        nextAvailable: 'Today 4:30 PM'
     }
 ];
 
@@ -142,10 +85,7 @@ const DEFAULT_WORKOUTS = [
         duration: 20,
         difficulty: 'Beginner',
         equipment: 'None',
-        calories: 150,
-        type: 'Cardio',
-        rating: 4.8,
-        completions: 1247
+        calories: 150
     },
     {
         id: 2,
@@ -153,21 +93,7 @@ const DEFAULT_WORKOUTS = [
         duration: 15,
         difficulty: 'Intermediate',
         equipment: 'Mat',
-        calories: 120,
-        type: 'Strength',
-        rating: 4.6,
-        completions: 856
-    },
-    {
-        id: 3,
-        name: 'HIIT Blast',
-        duration: 25,
-        difficulty: 'Advanced',
-        equipment: 'None',
-        calories: 300,
-        type: 'HIIT',
-        rating: 4.9,
-        completions: 2103
+        calories: 120
     }
 ];
 
@@ -179,17 +105,12 @@ function useVoiceRecognition(onCommand) {
         setIsListening(true);
         setTranscript('');
 
+        // Simulate voice recognition
         const commands = [
             'Start morning workout',
             'Show my progress',
             'Check my habits',
-            'Show analytics',
-            'Join a challenge',
-            'Book a trainer session',
-            'Start body scan',
-            'Play relaxing music',
-            'Check my streak',
-            'Show recommended workouts'
+            'Show analytics'
         ];
         const randomCommand = commands[Math.floor(Math.random() * commands.length)];
 
@@ -208,246 +129,381 @@ const WelcomeScreen = ({ isListening, transcript, startListening, aiResponse, on
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
             <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-black to-cyan-900/20"></div>
-                <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-black to-cyan-900/30"></div>
             </div>
-
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-8 text-center">
-                <div className="mb-8">
-                    <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-2xl mb-6 shadow-2xl">
-                        <Zap className="w-12 h-12 text-white" />
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full mb-8 shadow-2xl animate-pulse">
+                        <Activity className="w-14 h-14 text-white" />
                     </div>
-                    <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-white to-cyan-400 bg-clip-text text-transparent mb-4">
-                        PROTONIC
+                    <h1 className="text-7xl font-black tracking-tighter mb-4">
+            <span className="bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent">
+              PROTONIC
+            </span>
                     </h1>
-                    <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                        The world's first voice-powered AI fitness coach. Transform your body with revolutionary technology.
+                    <div className="text-3xl font-light text-gray-400 tracking-wider mb-6">INERTIA</div>
+                    <p className="text-xl text-gray-400 max-w-md mx-auto leading-relaxed">
+                        Voice-powered fitness with live trainers, habit science, and social challenges
                     </p>
                 </div>
 
-                <div className="mb-12">
-                    <div className={`relative inline-flex items-center justify-center w-32 h-32 rounded-full transition-all duration-500 ${
-                        isListening
-                            ? 'bg-gradient-to-r from-purple-500 to-cyan-500 shadow-2xl shadow-purple-500/50 scale-110'
-                            : 'bg-gray-800 hover:bg-gray-700 hover:scale-105'
-                    } cursor-pointer group`}
-                         onClick={startListening}
+                <div className="text-center mb-12">
+                    <button
+                        onClick={startListening}
+                        disabled={isListening}
+                        className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-300 mb-8 ${
+                            isListening
+                                ? 'bg-red-500 scale-110 animate-pulse shadow-2xl shadow-red-500/50'
+                                : 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:scale-105 shadow-2xl shadow-cyan-500/30'
+                        }`}
                     >
                         {isListening ? (
-                            <div className="flex items-center justify-center">
-                                <div className="w-6 h-6 bg-white rounded-full animate-pulse"></div>
+                            <div className="flex flex-col items-center">
+                                <Volume2 className="w-16 h-16 text-white mb-3 animate-pulse" />
+                                <div className="flex space-x-1">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                </div>
                             </div>
                         ) : (
-                            <Mic className="w-12 h-12 text-white group-hover:scale-110 transition-transform" />
+                            <Mic className="w-16 h-16 text-white" />
                         )}
-
-                        {isListening && (
-                            <div className="absolute inset-0 rounded-full border-4 border-white/30 animate-ping"></div>
-                        )}
-                    </div>
-
-                    <p className="mt-4 text-sm text-gray-400">
-                        {isListening ? 'Listening...' : 'Tap to activate voice control'}
+                    </button>
+                    <h2 className="text-3xl font-bold mb-4">
+                        {isListening ? 'Listening...' : 'Say "Sign up" or "Guest mode"'}
+                    </h2>
+                    <p className="text-gray-400 text-lg">
+                        {isListening ? 'Tell me how you would like to get started...' : 'Tap to talk or use the buttons below'}
                     </p>
-
-                    {transcript && (
-                        <div className="mt-4 p-4 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-purple-500/30">
-                            <p className="text-purple-300">"{transcript}"</p>
-                        </div>
-                    )}
-
-                    {aiResponse && (
-                        <div className="mt-4 p-4 bg-gradient-to-r from-purple-900/30 to-cyan-900/30 backdrop-blur-sm rounded-lg border border-cyan-500/30">
-                            <p className="text-cyan-300">{aiResponse}</p>
-                        </div>
-                    )}
                 </div>
 
-                <div className="space-y-4 w-full max-w-md">
+                {transcript && (
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-8 max-w-lg mx-auto">
+                        <p className="text-sm text-gray-400 mb-2">You said:</p>
+                        <p className="text-xl font-semibold text-center">"{transcript}"</p>
+                    </div>
+                )}
+
+                <div className="bg-cyan-500/10 backdrop-blur-xl rounded-2xl p-6 border border-cyan-500/20 max-w-lg mx-auto mb-8">
+                    <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center mr-3">
+                            <Zap className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-cyan-400 font-medium">AI Coach</span>
+                    </div>
+                    <p className="text-gray-200 leading-relaxed">{aiResponse}</p>
+                </div>
+
+                <div className="w-full max-w-sm space-y-4">
                     <button
                         onClick={onSignup}
-                        className="w-full py-4 px-8 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl"
+                        className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 py-4 rounded-2xl font-bold text-lg transition-all transform hover:scale-105"
                     >
-                        Get Started Free
+                        Create Account
                     </button>
-
                     <button
                         onClick={onGuest}
-                        className="w-full py-4 px-8 bg-gray-800 hover:bg-gray-700 rounded-xl font-semibold text-lg transition-all duration-300 border border-gray-600 hover:border-gray-500"
+                        className="w-full bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 py-4 rounded-2xl font-bold text-lg transition-all"
                     >
                         Continue as Guest
                     </button>
                 </div>
+            </div>
+        </div>
+    );
+};
 
-                <div className="mt-12 grid grid-cols-3 gap-8 text-center">
-                    <div className="space-y-2">
-                        <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto">
-                            <Mic className="w-6 h-6 text-purple-400" />
+const SignupScreen = ({ onSkip }) => {
+    const handleSocialLogin = (provider) => {
+        // In a real app, this would trigger OAuth flow
+        console.log(`Login with ${provider}`);
+        onSkip(); // For demo, just continue to app
+    };
+
+    return (
+        <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-cyan-900/20"></div>
+            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
+                <div className="w-full max-w-md">
+                    <div className="text-center mb-8">
+                        <div className="w-16 h-16 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <Activity className="w-8 h-8 text-white" />
                         </div>
-                        <p className="text-sm text-gray-400">Voice Control</p>
+                        <h2 className="text-3xl font-bold mb-2">Join Protonic</h2>
+                        <p className="text-gray-400">Create your account and get started</p>
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto">
-                            <Camera className="w-6 h-6 text-cyan-400" />
-                        </div>
-                        <p className="text-sm text-gray-400">AI Body Scan</p>
+                    <div className="space-y-4 mb-6">
+                        <p className="text-center text-sm text-gray-400 mb-4">Log in with:</p>
+
+                        {/* Google */}
+                        <button
+                            onClick={() => handleSocialLogin('Google')}
+                            className="w-full bg-white hover:bg-gray-100 text-black py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center space-x-3"
+                        >
+                            <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-red-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">G</span>
+                            </div>
+                            <span>Continue with Google</span>
+                        </button>
+
+                        {/* Apple */}
+                        <button
+                            onClick={() => handleSocialLogin('Apple')}
+                            className="w-full bg-black border border-white hover:bg-gray-900 text-white py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center space-x-3"
+                        >
+                            <div className="w-5 h-5 bg-white rounded flex items-center justify-center">
+                                <span className="text-black text-xs font-bold">🍎</span>
+                            </div>
+                            <span>Continue with Apple</span>
+                        </button>
+
+                        {/* Facebook */}
+                        <button
+                            onClick={() => handleSocialLogin('Facebook')}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center space-x-3"
+                        >
+                            <div className="w-5 h-5 bg-blue-800 rounded flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">f</span>
+                            </div>
+                            <span>Continue with Facebook</span>
+                        </button>
+
+                        {/* Instagram */}
+                        <button
+                            onClick={() => handleSocialLogin('Instagram')}
+                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center space-x-3"
+                        >
+                            <div className="w-5 h-5 bg-gradient-to-r from-purple-600 to-pink-600 rounded flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">📷</span>
+                            </div>
+                            <span>Continue with Instagram</span>
+                        </button>
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mx-auto">
-                            <Trophy className="w-6 h-6 text-green-400" />
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-600"></div>
                         </div>
-                        <p className="text-sm text-gray-400">Gamification</p>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="bg-black px-2 text-gray-400">or</span>
+                        </div>
                     </div>
+
+                    <button
+                        onClick={onSkip}
+                        className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 py-4 rounded-xl font-bold transition-all mb-4"
+                    >
+                        Continue to App
+                    </button>
+
+                    <p className="text-center text-xs text-gray-500">
+                        By continuing, you agree to our Terms of Service and Privacy Policy
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-const HomeScreen = ({ user, onVoiceCommand }) => {
-    const [selectedTab, setSelectedTab] = useState('home');
-
-    if (selectedTab === 'analytics') {
-        return <AnalyticsScreen onBack={() => setSelectedTab('home')} />;
-    }
-
-    if (selectedTab === 'challenges') {
-        return <ChallengesScreen onBack={() => setSelectedTab('home')} />;
-    }
-
+const VoiceHomeScreen = ({
+                             currentUser,
+                             userMetrics,
+                             transcript,
+                             isListening,
+                             startListening,
+                             aiResponse,
+                             setCurrentView
+                         }) => {
     return (
-        <div className="min-h-screen bg-black text-white">
-            <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-black to-black"></div>
+        <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
+            <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-cyan-900/20"></div>
+            </div>
 
-                <div className="relative z-10 p-6">
-                    <div className="flex items-center justify-between mb-8">
+            <div className="relative z-10 p-6">
+                <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center">
+                        {currentUser && !currentUser.isGuest && (
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center mr-3 text-white font-bold">
+                                {currentUser.name?.split(' ').map((n) => n[0]).join('')}
+                            </div>
+                        )}
                         <div>
-                            <h1 className="text-2xl font-bold">Welcome back, {user.name}! 🔥</h1>
-                            <p className="text-gray-400">Ready to crush your goals today?</p>
+                            <div className="text-gray-400 text-sm">
+                                {currentUser?.isGuest ? 'Guest Mode' : `Welcome back, ${currentUser?.name?.split(' ')[0]}!`}
+                            </div>
+                            <div className="font-bold flex items-center">
+                                <span>Level {userMetrics.level}</span>
+                                <span className="mx-2">•</span>
+                                <span className="flex items-center">
+                  <Flame className="w-4 h-4 mr-1 text-orange-400" />
+                                    {userMetrics.currentStreak} day streak
+                </span>
+                            </div>
                         </div>
+                    </div>
+                    <button
+                        onClick={() => setCurrentView('analytics')}
+                        className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all"
+                    >
+                        <BarChart3 className="w-5 h-5" />
+                    </button>
+                </div>
 
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={onVoiceCommand}
-                                className="w-12 h-12 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300"
-                            >
-                                <Mic className="w-6 h-6" />
-                            </button>
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                    <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-3 border border-orange-500/30">
+                        <div className="flex items-center justify-between mb-1">
+                            <Heart className="w-4 h-4 text-red-400" />
+                            <span className="text-xs text-gray-400">Avg HR</span>
+                        </div>
+                        <div className="text-xl font-bold">{userMetrics.heartRateAvg}</div>
+                        <div className="text-xs text-gray-400">bpm</div>
+                    </div>
+                    <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-xl p-3 border border-blue-500/30">
+                        <div className="flex items-center justify-between mb-1">
+                            <Activity className="w-4 h-4 text-cyan-400" />
+                            <span className="text-xs text-gray-400">VO2 Max</span>
+                        </div>
+                        <div className="text-xl font-bold">{userMetrics.vo2Max}</div>
+                        <div className="text-xs text-green-400">↗ 8%</div>
+                    </div>
+                    <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl p-3 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-1">
+                            <Award className="w-4 h-4 text-yellow-400" />
+                            <span className="text-xs text-gray-400">XP</span>
+                        </div>
+                        <div className="text-xl font-bold">{userMetrics.xp}</div>
+                        <div className="text-xs text-gray-400">/{userMetrics.nextLevelXp}</div>
+                    </div>
+                </div>
+            </div>
 
-                            <div className="text-right">
-                                <div className="flex items-center space-x-1">
-                                    <Zap className="w-4 h-4 text-yellow-400" />
-                                    <span className="font-bold text-yellow-400">{user.xp}</span>
+            <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 shadow-2xl bg-cyan-500">
+                        <Activity className="w-10 h-10 text-white" />
+                    </div>
+                    <h1 className="text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                        PROTONIC
+                    </h1>
+                    <p className="text-lg font-light text-gray-400 tracking-wider">FITNESS AI</p>
+                </div>
+
+                <div className="flex flex-col items-center justify-center mb-6">
+                    {/* Main Voice Button */}
+                    <button
+                        onClick={startListening}
+                        disabled={isListening}
+                        className={`w-40 h-40 rounded-full flex items-center justify-center transition-all duration-300 mb-6 ${
+                            isListening
+                                ? 'bg-red-500 scale-110 animate-pulse shadow-2xl shadow-red-500/50'
+                                : 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:scale-105 shadow-2xl shadow-cyan-500/30'
+                        }`}
+                    >
+                        {isListening ? (
+                            <div className="flex flex-col items-center">
+                                <Volume2 className="w-14 h-14 text-white mb-2 animate-pulse" />
+                                <div className="flex space-x-1">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                 </div>
-                                <p className="text-xs text-gray-400">Level {user.level}</p>
                             </div>
+                        ) : (
+                            <Mic className="w-14 h-14 text-white" />
+                        )}
+                    </button>
+
+                    {/* AI Body Scan Button */}
+                    <button
+                        onClick={() => setCurrentView('bodyScan')}
+                        className="w-full max-w-sm bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 py-4 px-6 rounded-2xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl shadow-green-500/30 mb-4"
+                    >
+                        <div className="flex items-center justify-center space-x-3">
+                            <Camera className="w-6 h-6 text-white" />
+                            <span>AI Body Scan</span>
                         </div>
+                    </button>
+
+                    {/* Secondary Action Buttons */}
+                    <div className="flex items-center space-x-4">
+                        <button
+                            onClick={() => setCurrentView('analytics')}
+                            className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-xl shadow-blue-500/30"
+                        >
+                            <BarChart3 className="w-6 h-6 text-white" />
+                        </button>
+                        <button
+                            onClick={() => setCurrentView('challenges')}
+                            className="w-16 h-16 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-xl shadow-yellow-500/30"
+                        >
+                            <Trophy className="w-6 h-6 text-white" />
+                        </button>
+                        <button
+                            onClick={() => setCurrentView('workouts')}
+                            className="w-16 h-16 rounded-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-xl shadow-red-500/30"
+                        >
+                            <Dumbbell className="w-6 h-6 text-white" />
+                        </button>
                     </div>
+                </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                        <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 p-4 rounded-xl border border-orange-500/30">
-                            <div className="flex items-center justify-between mb-2">
-                                <Flame className="w-6 h-6 text-orange-400" />
-                                <span className="text-2xl font-bold text-orange-400">{user.streak}</span>
-                            </div>
-                            <p className="text-sm text-gray-300">Day Streak</p>
-                        </div>
+                <h2 className="text-2xl font-bold mb-3">
+                    {isListening ? 'Listening...' : 'Voice Command Ready'}
+                </h2>
+                <p className="text-gray-400 text-center max-w-sm mx-auto mb-8">
+                    {isListening ? "I'm listening for your command..." : "Say 'start workout', 'show progress', or tap below"}
+                </p>
 
-                        <div className="bg-gradient-to-r from-green-600/20 to-emerald-600/20 p-4 rounded-xl border border-green-500/30">
-                            <div className="flex items-center justify-between mb-2">
-                                <Target className="w-6 h-6 text-green-400" />
-                                <span className="text-2xl font-bold text-green-400">{user.weeklyGoal}%</span>
-                            </div>
-                            <p className="text-sm text-gray-300">Weekly Goal</p>
-                        </div>
+                {transcript && (
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-6 max-w-lg mx-auto">
+                        <p className="text-sm text-gray-400 mb-2">You said:</p>
+                        <p className="text-lg font-semibold text-center">"{transcript}"</p>
                     </div>
+                )}
 
-                    <div className="space-y-6">
-                        <div>
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-semibold">Quick Start</h2>
-                                <button
-                                    onClick={() => setSelectedTab('challenges')}
-                                    className="text-sm text-purple-400 hover:text-purple-300"
-                                >
-                                    View All
-                                </button>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <button className="p-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl border border-purple-500/30 text-left hover:scale-105 transition-all">
-                                    <Video className="w-8 h-8 text-purple-400 mb-2" />
-                                    <h3 className="font-semibold mb-1">Start Workout</h3>
-                                    <p className="text-xs text-gray-400">20 min • Beginner</p>
-                                </button>
-
-                                <button className="p-4 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 rounded-xl border border-cyan-500/30 text-left hover:scale-105 transition-all">
-                                    <Camera className="w-8 h-8 text-cyan-400 mb-2" />
-                                    <h3 className="font-semibold mb-1">Body Scan</h3>
-                                    <p className="text-xs text-gray-400">AI posture analysis</p>
-                                </button>
-                            </div>
+                <div className="bg-cyan-500/10 backdrop-blur-xl rounded-2xl p-6 border border-cyan-500/20 max-w-lg mx-auto">
+                    <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-cyan-500">
+                            <Zap className="w-4 h-4 text-white" />
                         </div>
-
-                        <div>
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-semibold">Today's Habits</h2>
-                                <button className="text-sm text-cyan-400 hover:text-cyan-300">
-                                    Manage
-                                </button>
-                            </div>
-
-                            <div className="space-y-3">
-                                {DEFAULT_HABITS.slice(0, 2).map((habit) => (
-                                    <div key={habit.id} className="p-4 bg-gray-800/50 rounded-xl border border-gray-700">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="font-semibold">{habit.name}</h3>
-                                            <div className="flex items-center space-x-2">
-                                                <Flame className="w-4 h-4 text-orange-400" />
-                                                <span className="text-sm text-orange-400">{habit.streak}</span>
-                                            </div>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
-                                            <div
-                                                className="bg-gradient-to-r from-purple-500 to-cyan-500 h-2 rounded-full transition-all duration-300"
-                                                style={{ width: `${habit.progress}%` }}
-                                            ></div>
-                                        </div>
-                                        <p className="text-xs text-gray-400">{habit.description}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <span className="font-medium text-cyan-400">AI Coach</span>
                     </div>
+                    <p className="text-gray-200 leading-relaxed">{aiResponse}</p>
                 </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-gray-900/90 backdrop-blur-sm border-t border-gray-800 p-4">
-                <div className="flex justify-around">
+            <div className="relative z-10 p-6">
+                <div className="grid grid-cols-4 gap-3">
                     <button
-                        onClick={() => setSelectedTab('home')}
-                        className={`p-3 rounded-xl ${selectedTab === 'home' ? 'bg-purple-600' : 'bg-transparent'}`}
+                        onClick={() => setCurrentView('workouts')}
+                        className="bg-red-500/20 border border-red-500/30 rounded-2xl p-3 text-center hover:bg-red-500/30 transition-colors"
                     >
-                        <Activity className="w-6 h-6" />
+                        <Dumbbell className="w-5 h-5 mx-auto mb-1" />
+                        <div className="text-xs font-bold">Workouts</div>
                     </button>
                     <button
-                        onClick={() => setSelectedTab('challenges')}
-                        className={`p-3 rounded-xl ${selectedTab === 'challenges' ? 'bg-purple-600' : 'bg-transparent'}`}
+                        onClick={() => setCurrentView('trainers')}
+                        className="bg-green-500/20 border border-green-500/30 rounded-2xl p-3 text-center hover:bg-green-500/30 transition-colors"
                     >
-                        <Trophy className="w-6 h-6" />
+                        <Video className="w-5 h-5 mx-auto mb-1" />
+                        <div className="text-xs font-bold">Trainers</div>
                     </button>
                     <button
-                        onClick={() => setSelectedTab('analytics')}
-                        className={`p-3 rounded-xl ${selectedTab === 'analytics' ? 'bg-purple-600' : 'bg-transparent'}`}
+                        onClick={() => setCurrentView('habits')}
+                        className="bg-purple-500/20 border border-purple-500/30 rounded-2xl p-3 text-center hover:bg-purple-500/30 transition-colors"
                     >
-                        <BarChart3 className="w-6 h-6" />
+                        <Target className="w-5 h-5 mx-auto mb-1" />
+                        <div className="text-xs font-bold">Habits</div>
                     </button>
-                    <button className="p-3 rounded-xl bg-transparent">
-                        <Users className="w-6 h-6" />
+                    <button
+                        onClick={() => setCurrentView('challenges')}
+                        className="bg-yellow-500/20 border border-yellow-500/30 rounded-2xl p-3 text-center hover:bg-yellow-500/30 transition-colors"
+                    >
+                        <Trophy className="w-5 h-5 mx-auto mb-1" />
+                        <div className="text-xs font-bold">Challenges</div>
                     </button>
                 </div>
             </div>
@@ -455,84 +511,33 @@ const HomeScreen = ({ user, onVoiceCommand }) => {
     );
 };
 
-const AnalyticsScreen = ({ onBack }) => {
+const AnalyticsScreen = ({ userMetrics, setCurrentView }) => {
     return (
-        <div className="min-h-screen bg-black text-white p-6">
-            <div className="flex items-center mb-8">
-                <button onClick={onBack} className="mr-4 p-2 hover:bg-gray-800 rounded-lg">
-                    <X className="w-6 h-6" />
+        <div className="min-h-screen bg-black text-white flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+                <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                    ← Back
                 </button>
-                <h1 className="text-2xl font-bold">Your Progress</h1>
+                <h2 className="text-2xl font-bold">Analytics</h2>
+                <div></div>
             </div>
-
-            <div className="space-y-6">
+            <div className="p-6 flex-1">
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="p-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-4">
-                            <TrendingUp className="w-8 h-8 text-purple-400" />
-                            <span className="text-3xl font-bold text-purple-400">1,247</span>
-                        </div>
-                        <h3 className="font-semibold mb-1">Total XP</h3>
-                        <p className="text-sm text-gray-400">+127 this week</p>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4">
+                        <div className="text-sm text-gray-400">Total Workouts</div>
+                        <div className="text-2xl font-bold">{userMetrics.totalWorkouts}</div>
                     </div>
-
-                    <div className="p-6 bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-xl border border-green-500/30">
-                        <div className="flex items-center justify-between mb-4">
-                            <Timer className="w-8 h-8 text-green-400" />
-                            <span className="text-3xl font-bold text-green-400">24h</span>
-                        </div>
-                        <h3 className="font-semibold mb-1">Workout Time</h3>
-                        <p className="text-sm text-gray-400">This month</p>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4">
+                        <div className="text-sm text-gray-400">Total Minutes</div>
+                        <div className="text-2xl font-bold">{userMetrics.totalMinutes}</div>
                     </div>
-                </div>
-
-                <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700">
-                    <h3 className="font-semibold mb-4">Weekly Activity</h3>
-                    <div className="h-32 bg-gradient-to-r from-purple-600/10 to-cyan-600/10 rounded-lg flex items-end justify-center space-x-2 p-4">
-                        {[20, 45, 65, 30, 80, 55, 70].map((height, i) => (
-                            <div key={i} className="flex flex-col items-center">
-                                <div
-                                    className="w-6 bg-gradient-to-t from-purple-500 to-cyan-500 rounded-t"
-                                    style={{ height: `${height}%` }}
-                                ></div>
-                                <span className="text-xs text-gray-400 mt-2">
-                  {['M', 'T', 'W', 'T', 'F', 'S', 'S'][i]}
-                </span>
-                            </div>
-                        ))}
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4">
+                        <div className="text-sm text-gray-400">Calories Burned</div>
+                        <div className="text-2xl font-bold">{userMetrics.caloriesBurned}</div>
                     </div>
-                </div>
-
-                <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700">
-                    <h3 className="font-semibold mb-4">Achievement Progress</h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                                    <Trophy className="w-5 h-5 text-yellow-400" />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium">First Week Champion</h4>
-                                    <p className="text-sm text-gray-400">Complete 7 days in a row</p>
-                                </div>
-                            </div>
-                            <CheckCircle className="w-5 h-5 text-green-400" />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                    <Flame className="w-5 h-5 text-purple-400" />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium">Habit Master</h4>
-                                    <p className="text-sm text-gray-400">30-day streak (18/30)</p>
-                                </div>
-                            </div>
-                            <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-                                <span className="text-xs">18</span>
-                            </div>
-                        </div>
+                    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4">
+                        <div className="text-sm text-gray-400">VO₂ Max</div>
+                        <div className="text-2xl font-bold">{userMetrics.vo2Max}</div>
                     </div>
                 </div>
             </div>
@@ -540,118 +545,344 @@ const AnalyticsScreen = ({ onBack }) => {
     );
 };
 
-const ChallengesScreen = ({ onBack }) => {
-    return (
-        <div className="min-h-screen bg-black text-white p-6">
-            <div className="flex items-center mb-8">
-                <button onClick={onBack} className="mr-4 p-2 hover:bg-gray-800 rounded-lg">
-                    <X className="w-6 h-6" />
-                </button>
-                <h1 className="text-2xl font-bold">Challenges</h1>
+const BodyScanScreen = ({ setCurrentView, setAiResponse }) => {
+    const [scanStage, setScanStage] = useState('setup'); // setup, scanning, analyzing, results
+    const [scanResults, setScanResults] = useState(null);
+    const [cameraActive, setCameraActive] = useState(false);
+
+    const startScan = () => {
+        setCameraActive(true);
+        setScanStage('scanning');
+
+        // Simulate camera activation and scan process
+        setTimeout(() => {
+            setScanStage('analyzing');
+            setTimeout(() => {
+                // Simulate AI analysis results
+                const results = {
+                    overallScore: 78,
+                    areas: [
+                        {
+                            area: 'Posture',
+                            score: 65,
+                            issue: 'Forward head posture detected',
+                            recommendation: 'Focus on neck strengthening and chest stretching',
+                            exercises: ['Chin Tucks', 'Wall Angels', 'Upper Trap Stretches']
+                        },
+                        {
+                            area: 'Core Stability',
+                            score: 82,
+                            issue: 'Good core engagement, slight imbalance',
+                            recommendation: 'Continue core work with rotational movements',
+                            exercises: ['Russian Twists', 'Dead Bug', 'Pallof Press']
+                        },
+                        {
+                            area: 'Hip Alignment',
+                            score: 88,
+                            issue: 'Excellent hip mobility and alignment',
+                            recommendation: 'Maintain current hip flexibility routine',
+                            exercises: ['Hip Circles', 'Clamshells', 'Pigeon Pose']
+                        }
+                    ],
+                    preferences: 'Based on your scan, focusing on posture correction will give you the biggest improvements.'
+                };
+
+                setScanResults(results);
+                setScanStage('results');
+                setAiResponse("Body scan complete! I've identified key areas for improvement and created a personalized movement plan for you.");
+            }, 3000);
+        }, 2000);
+    };
+
+    const retakeScan = () => {
+        setScanStage('setup');
+        setScanResults(null);
+        setCameraActive(false);
+    };
+
+    if (scanStage === 'setup') {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col">
+                <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                        ← Back
+                    </button>
+                    <h2 className="text-2xl font-bold">AI Body Scan</h2>
+                    <div></div>
+                </div>
+
+                <div className="flex-1 flex flex-col items-center justify-center px-6">
+                    <div className="text-center mb-8">
+                        <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Camera className="w-12 h-12 text-white" />
+                        </div>
+                        <h3 className="text-3xl font-bold mb-4">AI Posture Analysis</h3>
+                        <p className="text-gray-400 max-w-md mx-auto leading-relaxed">
+                            Our AI will analyze your posture and movement patterns to identify areas for improvement and suggest personalized exercises.
+                        </p>
+                    </div>
+
+                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 max-w-md mx-auto mb-8">
+                        <h4 className="font-bold mb-3">Instructions:</h4>
+                        <ul className="text-sm text-gray-300 space-y-2">
+                            <li>• Stand 3-4 feet from your camera</li>
+                            <li>• Ensure good lighting</li>
+                            <li>• Wear fitted clothing</li>
+                            <li>• Stand naturally with arms at sides</li>
+                            <li>• Look straight ahead</li>
+                        </ul>
+                    </div>
+
+                    <button
+                        onClick={startScan}
+                        className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 py-4 px-8 rounded-2xl font-bold text-lg transition-all transform hover:scale-105"
+                    >
+                        Start Body Scan
+                    </button>
+                </div>
             </div>
+        );
+    }
 
-            <div className="space-y-4">
-                {DEFAULT_CHALLENGES.map((challenge) => (
-                    <div key={challenge.id} className="p-6 bg-gray-800/50 rounded-xl border border-gray-700">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex-1">
-                                <h3 className="font-semibold mb-2">{challenge.title}</h3>
-                                <p className="text-sm text-gray-400 mb-3">{challenge.description}</p>
+    if (scanStage === 'scanning') {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col">
+                <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                        ← Back
+                    </button>
+                    <h2 className="text-2xl font-bold">Scanning...</h2>
+                    <div></div>
+                </div>
 
-                                <div className="flex items-center space-x-4 text-sm">
-                                    <div className="flex items-center space-x-1">
-                                        <Users className="w-4 h-4 text-cyan-400" />
-                                        <span className="text-cyan-400">{challenge.participants}</span>
+                <div className="flex-1 flex flex-col items-center justify-center px-6">
+                    <div className="relative w-80 h-96 bg-gray-800 rounded-2xl mb-6 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-teal-500/20 animate-pulse"></div>
+                        <div className="absolute inset-4 border-2 border-green-500 rounded-xl animate-pulse"></div>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="w-12 h-16 bg-green-500/50 rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="absolute bottom-4 left-4 right-4 text-center">
+                            <div className="text-green-400 text-sm font-medium">Camera Active</div>
+                        </div>
+                    </div>
+
+                    <div className="text-center">
+                        <h3 className="text-2xl font-bold mb-4">Hold Still...</h3>
+                        <p className="text-gray-400">AI is capturing your posture data</p>
+
+                        <div className="flex justify-center mt-6">
+                            <div className="flex space-x-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (scanStage === 'analyzing') {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col">
+                <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                        ← Back
+                    </button>
+                    <h2 className="text-2xl font-bold">Analyzing...</h2>
+                    <div></div>
+                </div>
+
+                <div className="flex-1 flex flex-col items-center justify-center px-6">
+                    <div className="w-32 h-32 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-8 animate-spin">
+                        <Zap className="w-16 h-16 text-white" />
+                    </div>
+
+                    <div className="text-center">
+                        <h3 className="text-3xl font-bold mb-4">AI Analysis in Progress</h3>
+                        <p className="text-gray-400 max-w-md mx-auto leading-relaxed">
+                            Processing your posture data and identifying movement patterns...
+                        </p>
+
+                        <div className="mt-8 space-y-2">
+                            <div className="text-sm text-green-400">✓ Posture mapping complete</div>
+                            <div className="text-sm text-yellow-400">⏳ Analyzing muscle imbalances</div>
+                            <div className="text-sm text-gray-500">⏳ Generating exercise recommendations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (scanStage === 'results' && scanResults) {
+        return (
+            <div className="min-h-screen bg-black text-white flex flex-col">
+                <div className="flex items-center justify-between p-6 border-b border-white/10">
+                    <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                        ← Back
+                    </button>
+                    <h2 className="text-2xl font-bold">Scan Results</h2>
+                    <button onClick={retakeScan} className="text-green-400 font-medium">
+                        Retake
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6">
+                    <div className="max-w-2xl mx-auto">
+                        {/* Overall Score */}
+                        <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-2xl p-6 border border-green-500/30 mb-6">
+                            <div className="text-center">
+                                <h3 className="text-3xl font-bold mb-2">Overall Score</h3>
+                                <div className="text-6xl font-black text-green-400 mb-2">{scanResults.overallScore}</div>
+                                <div className="text-gray-400">Good posture with room for improvement</div>
+                            </div>
+                        </div>
+
+                        {/* AI Coach Recommendation */}
+                        <div className="bg-cyan-500/10 backdrop-blur-xl rounded-2xl p-6 border border-cyan-500/20 mb-6">
+                            <div className="flex items-center mb-3">
+                                <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center mr-3">
+                                    <Zap className="w-4 h-4 text-white" />
+                                </div>
+                                <span className="text-cyan-400 font-medium">AI Coach Recommendation</span>
+                            </div>
+                            <p className="text-gray-200 leading-relaxed">{scanResults.preferences}</p>
+                        </div>
+
+                        {/* Detailed Areas */}
+                        <div className="space-y-4">
+                            {scanResults.areas.map((area, index) => (
+                                <div key={index} className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h4 className="font-bold text-lg">{area.area}</h4>
+                                        <div className={`text-2xl font-bold ${area.score >= 80 ? 'text-green-400' : area.score >= 65 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                            {area.score}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center space-x-1">
-                                        <Calendar className="w-4 h-4 text-purple-400" />
-                                        <span className="text-purple-400">{challenge.duration}</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        <Zap className="w-4 h-4 text-yellow-400" />
-                                        <span className="text-yellow-400">{challenge.reward} XP</span>
+
+                                    <p className="text-gray-300 mb-3">{area.issue}</p>
+                                    <p className="text-cyan-300 mb-4">{area.recommendation}</p>
+
+                                    <div>
+                                        <h5 className="font-medium text-sm text-gray-400 mb-2">Recommended Exercises:</h5>
+                                        <div className="flex flex-wrap gap-2">
+                                            {area.exercises.map((exercise, i) => (
+                                                <span key={i} className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm">
+                          {exercise}
+                        </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="text-right">
-                <span className={`px-3 py-1 rounded-full text-xs ${
-                    challenge.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
-                        challenge.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-red-500/20 text-red-400'
-                }`}>
-                  {challenge.difficulty}
-                </span>
-                            </div>
+                            ))}
                         </div>
 
-                        <div className="mb-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm text-gray-400">Progress</span>
-                                <span className="text-sm text-gray-400">{challenge.progress}/{challenge.progress + challenge.daysRemaining} days</span>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                                <div
-                                    className="bg-gradient-to-r from-purple-500 to-cyan-500 h-2 rounded-full"
-                                    style={{ width: `${(challenge.progress / (challenge.progress + challenge.daysRemaining)) * 100}%` }}
-                                ></div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">by {challenge.creator}</span>
-                            <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg text-sm font-medium hover:scale-105 transition-all">
-                                {challenge.progress > 0 ? 'Continue' : 'Join Challenge'}
+                        <div className="mt-8 flex space-x-4">
+                            <button
+                                onClick={() => setCurrentView('workouts')}
+                                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 py-4 rounded-xl font-bold transition-all"
+                            >
+                                Start Corrective Workout
+                            </button>
+                            <button
+                                onClick={retakeScan}
+                                className="flex-1 bg-white/10 border border-white/20 hover:bg-white/20 py-4 rounded-xl font-medium transition-all"
+                            >
+                                Take Another Scan
                             </button>
                         </div>
                     </div>
-                ))}
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+};
+
+const GenericScreen = ({ title, items, setCurrentView }) => {
+    return (
+        <div className="min-h-screen bg-black text-white flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+                <button onClick={() => setCurrentView('home')} className="text-cyan-400 font-medium">
+                    ← Back
+                </button>
+                <h2 className="text-2xl font-bold">{title}</h2>
+                <div></div>
+            </div>
+            <div className="p-6 flex-1">
+                <div className="space-y-4">
+                    {items.map((item) => (
+                        <div key={item.id} className="bg-white/10 backdrop-blur-xl rounded-xl p-4">
+                            <div className="font-bold">{item.name || item.title}</div>
+                            <div className="text-sm text-gray-400 mt-1">
+                                {item.description || `${item.specialty || item.type} • ${item.duration || item.nextAvailable}`}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
 };
 
-export default function ProtonicApp() {
-    const [currentScreen, setCurrentScreen] = useState('welcome');
-    const [user, setUser] = useState({
-        name: 'Sarah',
+export default function ProtonicFitnessApp() {
+    const [currentView, setCurrentView] = useState('welcome');
+    const [currentUser, setCurrentUser] = useState(null);
+    const [aiResponse, setAiResponse] = useState("Hi! I'm your AI fitness coach. Say 'start workout', 'show trainers', or 'guest mode' to begin.");
+
+    const userMetrics = {
+        totalWorkouts: 127,
+        totalMinutes: 3420,
+        caloriesBurned: 24500,
+        currentStreak: 7,
         level: 12,
-        xp: 1247,
-        streak: 7,
-        weeklyGoal: 85
-    });
+        xp: 8750,
+        nextLevelXp: 10000,
+        heartRateAvg: 142,
+        vo2Max: 45.2
+    };
 
-    const [aiResponse, setAiResponse] = useState('');
+    const onVoiceCommand = useCallback((command) => {
+        const lower = command.toLowerCase();
+        if (lower.includes('guest mode')) {
+            setCurrentUser({ name: 'Guest User', isGuest: true });
+            setCurrentView('home');
+            setAiResponse("Welcome! You're in guest mode.");
+        } else if (lower.includes('body scan') || lower.includes('posture') || lower.includes('scan me')) {
+            setCurrentView('bodyScan');
+            setAiResponse("Let's analyze your posture and movement patterns to create a personalized workout plan!");
+        } else if (lower.includes('progress') || lower.includes('analytics')) {
+            setCurrentView('analytics');
+            setAiResponse("Here's your fitness dashboard!");
+        } else if (lower.includes('workout')) {
+            setCurrentView('workouts');
+            setAiResponse("Let's start your workout!");
+        } else {
+            setAiResponse("I can help with workouts, body scans, progress tracking, or other fitness goals.");
+        }
+    }, []);
 
-    const { isListening, transcript, startListening } = useVoiceRecognition((command) => {
-        const responses = {
-            'Start morning workout': "Great choice! I've prepared a 20-minute energizing routine perfect for your current fitness level.",
-            'Show my progress': "You're crushing it! 7-day streak and 85% towards your weekly goal. Keep up the amazing work!",
-            'Check my habits': "Your morning routine is at 85% consistency. You're building incredible discipline!",
-            'Show analytics': "Let me pull up your detailed progress report with insights and recommendations.",
-            'Join a challenge': "I found 3 active challenges that match your interests. The 30-Day Morning Routine looks perfect for you!",
-            'Book a trainer session': "Dr. Sarah Chen is available today at 3:00 PM for strength training. Should I book it?",
-            'Start body scan': "Activating AI body scan. Please stand in front of your camera with arms at your sides.",
-            'Play relaxing music': "Playing your personalized focus playlist. Perfect for your afternoon workout!",
-            'Check my streak': "Incredible! You're on a 7-day streak. Just 23 more days to unlock the 30-day champion badge!",
-            'Show recommended workouts': "Based on your progress, I recommend the HIIT Blast workout. It's perfectly calibrated for your fitness level."
-        };
-
-        const response = responses[command] || "I heard you say '" + command + "'. How can I help you with that?";
-        setAiResponse(response);
-
-        setTimeout(() => setAiResponse(''), 5000);
-    });
+    const { isListening, transcript, startListening } = useVoiceRecognition(onVoiceCommand);
 
     const handleSignup = () => {
-        setCurrentScreen('home');
+        setCurrentView('signup');
     };
 
     const handleGuest = () => {
-        setCurrentScreen('home');
+        setCurrentUser({ name: 'Guest User', isGuest: true });
+        setCurrentView('home');
     };
 
-    if (currentScreen === 'welcome') {
+    const handleCompleteSignup = () => {
+        setCurrentUser({ name: 'New User' });
+        setCurrentView('home');
+    };
+
+    if (currentView === 'welcome') {
         return (
             <WelcomeScreen
                 isListening={isListening}
@@ -664,10 +895,47 @@ export default function ProtonicApp() {
         );
     }
 
-    return (
-        <HomeScreen
-            user={user}
-            onVoiceCommand={startListening}
-        />
-    );
+    if (currentView === 'signup') {
+        return <SignupScreen onSkip={handleCompleteSignup} />;
+    }
+
+    if (currentView === 'home') {
+        return (
+            <VoiceHomeScreen
+                currentUser={currentUser}
+                userMetrics={userMetrics}
+                transcript={transcript}
+                isListening={isListening}
+                startListening={startListening}
+                aiResponse={aiResponse}
+                setCurrentView={setCurrentView}
+            />
+        );
+    }
+
+    if (currentView === 'analytics') {
+        return <AnalyticsScreen userMetrics={userMetrics} setCurrentView={setCurrentView} />;
+    }
+
+    if (currentView === 'bodyScan') {
+        return <BodyScanScreen setCurrentView={setCurrentView} setAiResponse={setAiResponse} />;
+    }
+
+    if (currentView === 'workouts') {
+        return <GenericScreen title="Workouts" items={DEFAULT_WORKOUTS} setCurrentView={setCurrentView} />;
+    }
+
+    if (currentView === 'trainers') {
+        return <GenericScreen title="Trainers" items={DEFAULT_TRAINERS} setCurrentView={setCurrentView} />;
+    }
+
+    if (currentView === 'habits') {
+        return <GenericScreen title="Habits" items={DEFAULT_HABITS} setCurrentView={setCurrentView} />;
+    }
+
+    if (currentView === 'challenges') {
+        return <GenericScreen title="Challenges" items={DEFAULT_CHALLENGES} setCurrentView={setCurrentView} />;
+    }
+
+    return null;
 }
