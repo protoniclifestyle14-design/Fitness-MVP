@@ -1,4 +1,4 @@
-import Image from "next/image";
+"use client"
 import ProtonicFitnessApp from "@/app/protonic-fitness-app-fixed";
 
 export default function Home() {
