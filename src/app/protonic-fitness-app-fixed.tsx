@@ -313,7 +313,7 @@ const WelcomeScreen = ({ isListening, transcript, startListening, error, aiRespo
                 {transcript && (
                     <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-8 max-w-lg mx-auto">
                         <p className="text-sm text-gray-400 mb-2">You said:</p>
-                        <p className="text-xl font-semibold text-center">"{transcript}"</p>
+                        <p className="text-xl font-semibold text-center">&quot;{transcript}&quot;</p>
                     </div>
                 )}
 
@@ -1593,7 +1593,7 @@ const VoiceHomeScreen = ({
                 {transcript && (
                     <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 mb-4 max-w-sm mx-auto">
                         <p className="text-xs text-gray-400 mb-1">You said:</p>
-                        <p className="text-sm font-semibold">"{transcript}"</p>
+                        <p className="text-sm font-semibold">&quot;{transcript}&quot;</p>
                     </div>
                 )}
 
