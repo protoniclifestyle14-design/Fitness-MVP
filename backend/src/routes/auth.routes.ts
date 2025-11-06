@@ -54,7 +54,7 @@ router.post(
       [user.id]
     );
     const { rows: statsRows } = await pool.query(
-      `SELECT total_workouts, total_minutes FROM user_stats WHERE user_id = $1`,
+      `SELECT total_workouts, total_workout_minutes FROM user_stats WHERE user_id = $1`,
       [user.id]
     );
 
@@ -105,7 +105,7 @@ router.post(
       [user.id]
     );
     const { rows: statsRows } = await pool.query(
-      `SELECT total_workouts, total_minutes FROM user_stats WHERE user_id = $1`,
+      `SELECT total_workouts, total_workout_minutes FROM user_stats WHERE user_id = $1`,
       [user.id]
     );
 
