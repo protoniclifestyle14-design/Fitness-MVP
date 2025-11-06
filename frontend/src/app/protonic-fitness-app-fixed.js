@@ -14,6 +14,8 @@ import {
     Volume2,
     Zap
 } from 'lucide-react';
+import { Activity, Mic, MicOff, Zap, Users, Target, TrendingUp, Trophy, Heart, Camera, Play, ChevronRight, Star, MessageCircle, Share2, Award, Volume2 } from 'lucide-react';
+import { register as registerUser } from '@/lib/api';
 
 const ProtonicFitnessApp = () => {
     const [currentScreen, setCurrentScreen] = useState('welcome');
@@ -32,6 +34,8 @@ const ProtonicFitnessApp = () => {
     const [lastVoiceCommand, setLastVoiceCommand] = useState('');
     const [signupForm, setSignupForm] = useState({ name: '', email: '', password: '' });
     const [selectedTier, setSelectedTier] = useState(null);
+    const [isSigningUp, setIsSigningUp] = useState(false);
+    const [signupError, setSignupError] = useState('');
     const recognitionRef = useRef(null);
 
     const subscriptionTiers = [
@@ -352,19 +356,61 @@ const ProtonicFitnessApp = () => {
         }, 500);
     };
 
-    const handleSignup = () => {
-        // In a real app, this would validate and create account
-        if (signupForm.name && signupForm.email && signupForm.password) {
-            // Create temp user account without subscription
-            const tempUser = {
-                name: signupForm.name,
+    const handleSignup = async () => {
+        // Clear any previous errors
+        setSignupError('');
+
+        // Validate form fields
+        if (!signupForm.name || !signupForm.email || !signupForm.password) {
+            setSignupError('Please fill in all fields');
+            return;
+        }
+
+        // Validate password length
+        if (signupForm.password.length < 8) {
+            setSignupError('Password must be at least 8 characters');
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(signupForm.email)) {
+            setSignupError('Please enter a valid email address');
+            return;
+        }
+
+        setIsSigningUp(true);
+
+        try {
+            // Call backend registration API
+            const response = await registerUser({
                 email: signupForm.email,
-                subscriptionTier: null
+                password: signupForm.password,
+                name: signupForm.name
+            });
+
+            // Create user object with backend data
+            const newUser = {
+                id: response.user.id,
+                name: signupForm.name,
+                email: response.user.email,
+                email_verified: response.user.email_verified,
+                subscriptionTier: null,
+                // Store profile and stats if available
+                profile: response.profile,
+                stats: response.stats
             };
-            setUser(tempUser);
+
+            setUser(newUser);
             setCurrentScreen('pricing');
-        } else {
-            alert('Please fill in all fields');
+
+            // Clear form
+            setSignupForm({ name: '', email: '', password: '' });
+        } catch (error) {
+            console.error('Signup error:', error);
+            setSignupError(error.message || 'Registration failed. Please try again.');
+        } finally {
+            setIsSigningUp(false);
         }
     };
 
@@ -626,7 +672,10 @@ const ProtonicFitnessApp = () => {
                                     type="text"
                                     placeholder="Alex Johnson"
                                     value={signupForm.name}
-                                    onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
+                                    onChange={(e) => {
+                                        setSignupForm({ ...signupForm, name: e.target.value });
+                                        setSignupError('');
+                                    }}
                                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
                             </div>
@@ -637,7 +686,10 @@ const ProtonicFitnessApp = () => {
                                     type="email"
                                     placeholder="alex@example.com"
                                     value={signupForm.email}
-                                    onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
+                                    onChange={(e) => {
+                                        setSignupForm({ ...signupForm, email: e.target.value });
+                                        setSignupError('');
+                                    }}
                                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
                             </div>
@@ -648,16 +700,28 @@ const ProtonicFitnessApp = () => {
                                     type="password"
                                     placeholder="••••••••"
                                     value={signupForm.password}
-                                    onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
+                                    onChange={(e) => {
+                                        setSignupForm({ ...signupForm, password: e.target.value });
+                                        setSignupError('');
+                                    }}
                                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
+                                <p className="text-xs text-gray-400 mt-1">Must be at least 8 characters</p>
                             </div>
+
+                            {signupError && (
+                                <div className="bg-red-500/20 border border-red-500 rounded-xl p-3 flex items-start gap-2">
+                                    <span className="text-red-400">⚠️</span>
+                                    <p className="text-sm text-red-300">{signupError}</p>
+                                </div>
+                            )}
 
                             <button
                                 onClick={handleSignup}
-                                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all mt-6"
+                                disabled={isSigningUp}
+                                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Create Account
+                                {isSigningUp ? 'Creating Account...' : 'Create Account'}
                             </button>
 
                             <div className="text-center mt-4">

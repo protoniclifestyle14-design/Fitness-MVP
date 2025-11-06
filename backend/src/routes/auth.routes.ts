@@ -48,7 +48,29 @@ router.post(
     }
     await pool.query(`INSERT INTO user_stats (user_id) VALUES ($1)`, [user.id]);
 
-    return res.status(201).json({ user: { id: user.id, email: user.email, email_verified: user.email_verified } });
+    // Get profile and stats for response
+    const { rows: profileRows } = await pool.query(
+      `SELECT name, bio, avatar_url FROM user_profiles WHERE user_id = $1`,
+      [user.id]
+    );
+    const { rows: statsRows } = await pool.query(
+      `SELECT total_workouts, total_minutes FROM user_stats WHERE user_id = $1`,
+      [user.id]
+    );
+
+    // Generate tokens for auto-login after registration
+    const accessToken = createAccessToken({ id: user.id, email: user.email });
+    const refreshToken = createRefreshToken({ id: user.id, email: user.email });
+    const expiresAt = parseRefreshExp(refreshToken);
+    await storeRefreshToken(user.id, refreshToken, expiresAt);
+
+    return res.status(201).json({
+      user: { id: user.id, email: user.email, email_verified: user.email_verified },
+      profile: profileRows[0] || null,
+      stats: statsRows[0] || null,
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
   })
 );
 
