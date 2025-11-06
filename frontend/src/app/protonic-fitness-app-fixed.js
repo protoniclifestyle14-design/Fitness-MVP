@@ -14,8 +14,7 @@ import {
     Volume2,
     Zap
 } from 'lucide-react';
-import { Activity, Mic, MicOff, Zap, Users, Target, TrendingUp, Trophy, Heart, Camera, Play, ChevronRight, Star, MessageCircle, Share2, Award, Volume2 } from 'lucide-react';
-import { register as registerUser } from '@/lib/api';
+import { register as registerUser, login as loginUser, getCurrentUser } from '@/lib/api';
 
 const ProtonicFitnessApp = () => {
     const [currentScreen, setCurrentScreen] = useState('welcome');
@@ -33,9 +32,13 @@ const ProtonicFitnessApp = () => {
     const [coachSpeaking, setCoachSpeaking] = useState(false);
     const [lastVoiceCommand, setLastVoiceCommand] = useState('');
     const [signupForm, setSignupForm] = useState({ name: '', email: '', password: '' });
+    const [loginForm, setLoginForm] = useState({ email: '', password: '' });
     const [selectedTier, setSelectedTier] = useState(null);
     const [isSigningUp, setIsSigningUp] = useState(false);
     const [signupError, setSignupError] = useState('');
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
+    const [loginError, setLoginError] = useState('');
+    const [isDemoMode, setIsDemoMode] = useState(false);
     const recognitionRef = useRef(null);
 
     const subscriptionTiers = [
@@ -414,6 +417,112 @@ const ProtonicFitnessApp = () => {
         }
     };
 
+    const handleLogin = async () => {
+        // Clear any previous errors
+        setLoginError('');
+
+        // Validate form fields
+        if (!loginForm.email || !loginForm.password) {
+            setLoginError('Please fill in all fields');
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(loginForm.email)) {
+            setLoginError('Please enter a valid email address');
+            return;
+        }
+
+        setIsLoggingIn(true);
+
+        try {
+            // Call backend login API
+            const response = await loginUser({
+                email: loginForm.email,
+                password: loginForm.password
+            });
+
+            // Create user object with backend data
+            const loggedInUser = {
+                id: response.user.id,
+                name: response.profile?.name || 'User',
+                email: response.user.email,
+                email_verified: response.user.email_verified,
+                subscriptionTier: 'free', // Default, would come from backend in production
+                profile: response.profile,
+                stats: response.stats,
+                // Add demo data for features not yet in backend
+                level: 1,
+                xp: 0,
+                nextLevelXp: 1000,
+                streak: response.stats?.streak || 0,
+                coins: 0,
+                achievements: 0,
+                workoutsCompleted: response.stats?.total_workouts || 0
+            };
+
+            setUser(loggedInUser);
+            setIsDemoMode(false);
+            setCurrentScreen('home');
+
+            // Clear form
+            setLoginForm({ email: '', password: '' });
+        } catch (error) {
+            console.error('Login error:', error);
+            setLoginError(error.message || 'Login failed. Please check your credentials.');
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
+    const handleDemoMode = () => {
+        // Create a demo/guest user
+        const demoUser = {
+            id: 'demo',
+            name: 'Demo User',
+            email: 'demo@protonic.fitness',
+            email_verified: false,
+            subscriptionTier: 'free',
+            level: 5,
+            xp: 1250,
+            nextLevelXp: 2000,
+            streak: 3,
+            coins: 250,
+            achievements: 5,
+            workoutsCompleted: 12,
+            stats: {
+                strength: 35,
+                endurance: 40,
+                flexibility: 25,
+                speed: 30
+            },
+            weeklyProgress: {
+                monday: 150,
+                tuesday: 200,
+                wednesday: 0,
+                thursday: 180,
+                friday: 0,
+                saturday: 0,
+                sunday: 0
+            },
+            personalBests: {
+                longestStreak: 7,
+                mostCaloriesDay: 350,
+                totalWorkouts: 12,
+                totalMinutes: 480
+            },
+            recentBadges: [
+                { id: 1, name: 'First Week', icon: '🎯', earned: '3 days ago' },
+                { id: 2, name: 'Early Adopter', icon: '⭐', earned: '5 days ago' }
+            ]
+        };
+
+        setUser(demoUser);
+        setIsDemoMode(true);
+        setCurrentScreen('home');
+    };
+
     const handleSubscriptionSelect = (tierId) => {
         setSelectedTier(tierId);
         // Update user with selected tier
@@ -647,6 +756,96 @@ const ProtonicFitnessApp = () => {
         );
     }
 
+    // Login Screen
+    if (currentScreen === 'login') {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex flex-col">
+                <div className="flex-1 flex flex-col items-center justify-center px-6">
+                    <div className="w-full max-w-md">
+                        <button onClick={() => setCurrentScreen('welcome')} className="mb-6 text-gray-300 flex items-center gap-2">
+                            ← Back
+                        </button>
+
+                        <div className="text-center mb-8">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full mb-4 shadow-2xl">
+                                <Activity className="w-10 h-10" />
+                            </div>
+                            <h1 className="text-4xl font-black mb-2">Welcome Back</h1>
+                            <p className="text-gray-400">Log in to continue your fitness journey</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-gray-300">Email</label>
+                                <input
+                                    type="email"
+                                    placeholder="alex@example.com"
+                                    value={loginForm.email}
+                                    onChange={(e) => {
+                                        setLoginForm({ ...loginForm, email: e.target.value });
+                                        setLoginError('');
+                                    }}
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-gray-300">Password</label>
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={loginForm.password}
+                                    onChange={(e) => {
+                                        setLoginForm({ ...loginForm, password: e.target.value });
+                                        setLoginError('');
+                                    }}
+                                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
+                                />
+                            </div>
+
+                            {loginError && (
+                                <div className="bg-red-500/20 border border-red-500 rounded-xl p-3 flex items-start gap-2">
+                                    <span className="text-red-400">⚠️</span>
+                                    <p className="text-sm text-red-300">{loginError}</p>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleLogin}
+                                disabled={isLoggingIn}
+                                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isLoggingIn ? 'Signing In...' : 'Sign In'}
+                            </button>
+
+                            <div className="text-center mt-4">
+                                <p className="text-sm text-gray-400">
+                                    Don&#39;t have an account?{' '}
+                                    <button
+                                        onClick={() => setCurrentScreen('signup')}
+                                        className="text-cyan-400 font-bold"
+                                    >
+                                        Create Account
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 text-center">
+                            <p className="text-sm text-gray-500 mb-4">Or try the app first</p>
+                            <button
+                                onClick={handleDemoMode}
+                                className="w-full bg-white/5 border border-white/20 py-3 rounded-full font-semibold hover:bg-white/10 transition-all"
+                            >
+                                Continue as Guest
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // Signup Screen
     if (currentScreen === 'signup') {
         return (
@@ -728,7 +927,7 @@ const ProtonicFitnessApp = () => {
                                 <p className="text-sm text-gray-400">
                                     Already have an account?{' '}
                                     <button
-                                        onClick={() => { setUser(mockUser); setCurrentScreen('home'); }}
+                                        onClick={() => setCurrentScreen('login')}
                                         className="text-cyan-400 font-bold"
                                     >
                                         Sign In
@@ -819,10 +1018,16 @@ const ProtonicFitnessApp = () => {
                             GET IT
                         </button>
                         <button
-                            onClick={() => { setUser(mockUser); setCurrentScreen('home'); }}
+                            onClick={handleDemoMode}
                             className="w-full bg-white/10 backdrop-blur-lg py-4 rounded-full font-bold border border-white/20 hover:bg-white/20 transition-all hover:scale-105"
                         >
                             TRY IT
+                        </button>
+                        <button
+                            onClick={() => setCurrentScreen('login')}
+                            className="w-full bg-transparent py-3 rounded-full font-semibold text-cyan-400 hover:text-cyan-300 transition-all"
+                        >
+                            Already have an account? Sign In
                         </button>
                     </div>
 
@@ -838,6 +1043,22 @@ const ProtonicFitnessApp = () => {
     if (currentScreen === 'home') {
         return (
             <div className="min-h-screen bg-slate-900 text-white">
+                {/* Demo Mode Banner */}
+                {isDemoMode && (
+                    <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-3 text-center">
+                        <p className="text-sm font-bold text-slate-900">
+                            🎮 Demo Mode - Your progress won&#39;t be saved.{' '}
+                            <button
+                                onClick={() => setCurrentScreen('signup')}
+                                className="underline font-black hover:text-white transition-colors"
+                            >
+                                Create Account
+                            </button>
+                            {' '}to save your workouts!
+                        </p>
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl">
                     <div className="flex justify-between items-center mb-6">

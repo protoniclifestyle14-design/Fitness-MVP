@@ -86,7 +86,7 @@ router.post(
     const { email, password } = req.body;
 
     const { rows } = await pool.query(
-      `SELECT id, email, password_hash, is_active FROM users WHERE email = $1`,
+      `SELECT id, email, password_hash, email_verified, is_active FROM users WHERE email = $1`,
       [email]
     );
     if (!rows.length) return res.status(401).json({ error: 'Invalid email or password' });
@@ -99,13 +99,29 @@ router.post(
 
     await pool.query(`UPDATE users SET last_login = NOW() WHERE id = $1`, [user.id]);
 
+    // Get profile and stats for response
+    const { rows: profileRows } = await pool.query(
+      `SELECT name, bio, avatar_url FROM user_profiles WHERE user_id = $1`,
+      [user.id]
+    );
+    const { rows: statsRows } = await pool.query(
+      `SELECT total_workouts, total_minutes FROM user_stats WHERE user_id = $1`,
+      [user.id]
+    );
+
     const accessToken = createAccessToken({ id: user.id, email: user.email });
     const refreshToken = createRefreshToken({ id: user.id, email: user.email });
 
     const expiresAt = parseRefreshExp(refreshToken);
     await storeRefreshToken(user.id, refreshToken, expiresAt);
 
-    return res.status(200).json({ accessToken, refreshToken });
+    return res.status(200).json({
+      user: { id: user.id, email: user.email, email_verified: user.email_verified, is_active: user.is_active },
+      profile: profileRows[0] || null,
+      stats: statsRows[0] || null,
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
   })
 );
 
