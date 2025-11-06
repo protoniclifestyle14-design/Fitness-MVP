@@ -1,5 +1,19 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Activity, Mic, MicOff, Zap, Users, Target, TrendingUp, Trophy, Heart, Camera, Play, ChevronRight, Star, MessageCircle, Share2, Award, Volume2 } from 'lucide-react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+    Activity,
+    Award,
+    Camera,
+    Heart,
+    MessageCircle,
+    Mic,
+    Share2,
+    Target,
+    TrendingUp,
+    Trophy,
+    Users,
+    Volume2,
+    Zap
+} from 'lucide-react';
 
 const ProtonicFitnessApp = () => {
     const [currentScreen, setCurrentScreen] = useState('welcome');
@@ -542,7 +556,7 @@ const ProtonicFitnessApp = () => {
                                 </div>
                                 {selectedTierInfo?.id === 'pro' && (
                                     <p className="text-xs text-gray-400 mt-3 text-center">
-                                        7-day free trial included • You won't be charged until trial ends
+                                        7-day free trial included • You won&#39;t be charged until trial ends
                                     </p>
                                 )}
                             </div>
@@ -723,7 +737,7 @@ const ProtonicFitnessApp = () => {
 
                     {transcript && (
                         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-4 mb-4 max-w-md">
-                            <p className="text-sm text-gray-300 italic">"{transcript}"</p>
+                            <p className="text-sm text-gray-300 italic">&#34;{transcript}&#34;</p>
                         </div>
                     )}
 
@@ -811,7 +825,7 @@ const ProtonicFitnessApp = () => {
 
                     {transcript && (
                         <div className="mt-4 bg-white/5 rounded-xl p-4 border border-white/10">
-                            <p className="text-sm text-gray-300 italic">"{transcript}"</p>
+                            <p className="text-sm text-gray-300 italic">&#34;{transcript}&#34;</p>
                         </div>
                     )}
                 </div>
@@ -1345,7 +1359,7 @@ const ProtonicFitnessApp = () => {
                         <div className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl p-4 border border-cyan-500/50">
                             <div className="flex items-center gap-2">
                                 <Mic className="w-5 h-5 text-cyan-400" />
-                                <p className="text-sm text-gray-300">You said: <span className="text-white font-bold">"{lastVoiceCommand}"</span></p>
+                                <p className="text-sm text-gray-300">You said: <span className="text-white font-bold">&#34;{lastVoiceCommand}&#34;</span></p>
                             </div>
                         </div>
                     )}
@@ -1425,27 +1439,27 @@ const ProtonicFitnessApp = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-cyan-400 font-bold">"Start set"</p>
+                                <p className="text-cyan-400 font-bold">&#34;Start set&#34;</p>
                                 <p className="text-gray-400 text-xs">Begin recording</p>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-purple-400 font-bold">"Next set"</p>
+                                <p className="text-purple-400 font-bold">&#34;Next set&#34;</p>
                                 <p className="text-gray-400 text-xs">Move forward</p>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-green-400 font-bold">"Form check"</p>
+                                <p className="text-green-400 font-bold">&#34;Form check&#34;</p>
                                 <p className="text-gray-400 text-xs">Get coaching</p>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-yellow-400 font-bold">"How many"</p>
+                                <p className="text-yellow-400 font-bold">&#34;How many&#34;</p>
                                 <p className="text-gray-400 text-xs">Rep count</p>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-red-400 font-bold">"Stop"</p>
+                                <p className="text-red-400 font-bold">&#34;Stop&#34;</p>
                                 <p className="text-gray-400 text-xs">Pause set</p>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-orange-400 font-bold">"Take a break"</p>
+                                <p className="text-orange-400 font-bold">&#34;Take a break&#34;</p>
                                 <p className="text-gray-400 text-xs">Rest time</p>
                             </div>
                         </div>
