@@ -250,49 +250,6 @@ const ProtonicFitnessApp = () => {
         { id: 'motivated', name: 'Motivated', icon: '💪', color: 'from-green-500 to-teal-500' }
     ];
 
-    const mockUser = {
-        name: 'Alex',
-        level: 12,
-        xp: 3450,
-        nextLevelXp: 4000,
-        streak: 7,
-        coins: 850,
-        achievements: 23,
-        workoutsCompleted: 45,
-        stats: {
-            strength: 75,
-            endurance: 60,
-            flexibility: 45,
-            speed: 55
-        },
-        weeklyProgress: {
-            monday: 320,
-            tuesday: 450,
-            wednesday: 0,
-            thursday: 380,
-            friday: 520,
-            saturday: 290,
-            sunday: 0
-        },
-        personalBests: {
-            longestStreak: 21,
-            mostCaloriesDay: 847,
-            totalWorkouts: 45,
-            totalMinutes: 1847
-        },
-        recentBadges: [
-            { id: 1, name: 'Week Warrior', icon: '🔥', earned: '2 days ago' },
-            { id: 2, name: '50 Workouts', icon: '💪', earned: '1 week ago' },
-            { id: 3, name: 'Early Bird', icon: '🌅', earned: '2 weeks ago' }
-        ],
-        wearables: {
-            connected: ['Apple Watch'],
-            heartRate: 142,
-            steps: 8247,
-            activeMinutes: 67
-        }
-    };
-
     const challenges = [
         { id: 1, name: '30-Day Plank Challenge', participants: 1247, prize: '500 coins', progress: 12, total: 30 },
         { id: 2, name: 'Weekend Warrior', participants: 856, prize: 'Exclusive Badge', progress: 1, total: 2 },
@@ -359,6 +316,52 @@ const ProtonicFitnessApp = () => {
         }, 500);
     };
 
+    // Helper function to create a complete user object with all required properties
+    const createCompleteUser = (baseData) => {
+        return {
+            id: baseData.id,
+            name: baseData.name || 'User',
+            email: baseData.email,
+            email_verified: baseData.email_verified || false,
+            subscriptionTier: baseData.subscriptionTier || null,
+            profile: baseData.profile || null,
+            stats: baseData.stats || null,
+            level: baseData.level || 1,
+            xp: baseData.xp || 0,
+            nextLevelXp: baseData.nextLevelXp || 1000,
+            streak: baseData.streak || 0,
+            coins: baseData.coins || 0,
+            achievements: baseData.achievements || 0,
+            workoutsCompleted: baseData.workoutsCompleted || 0,
+            // Initialize wearables with defaults
+            wearables: baseData.wearables || {
+                connected: [],
+                heartRate: 0,
+                steps: 0,
+                activeMinutes: 0
+            },
+            // Initialize weeklyProgress with zeros
+            weeklyProgress: baseData.weeklyProgress || {
+                monday: 0,
+                tuesday: 0,
+                wednesday: 0,
+                thursday: 0,
+                friday: 0,
+                saturday: 0,
+                sunday: 0
+            },
+            // Initialize personalBests with defaults
+            personalBests: baseData.personalBests || {
+                longestStreak: 0,
+                mostCaloriesDay: 0,
+                totalWorkouts: 0,
+                totalMinutes: 0
+            },
+            // Initialize recentBadges as empty array
+            recentBadges: baseData.recentBadges || []
+        };
+    };
+
     const handleSignup = async () => {
         // Clear any previous errors
         setSignupError('');
@@ -392,17 +395,18 @@ const ProtonicFitnessApp = () => {
                 name: signupForm.name
             });
 
-            // Create user object with backend data
-            const newUser = {
+            // Create user object with backend data using helper function
+            const newUser = createCompleteUser({
                 id: response.user.id,
                 name: signupForm.name,
                 email: response.user.email,
                 email_verified: response.user.email_verified,
                 subscriptionTier: null,
-                // Store profile and stats if available
                 profile: response.profile,
-                stats: response.stats
-            };
+                stats: response.stats,
+                workoutsCompleted: response.stats?.total_workouts || 0,
+                streak: response.stats?.streak || 0
+            });
 
             setUser(newUser);
             setCurrentScreen('pricing');
@@ -443,8 +447,8 @@ const ProtonicFitnessApp = () => {
                 password: loginForm.password
             });
 
-            // Create user object with backend data
-            const loggedInUser = {
+            // Create user object with backend data using helper function
+            const loggedInUser = createCompleteUser({
                 id: response.user.id,
                 name: response.profile?.name || 'User',
                 email: response.user.email,
@@ -452,7 +456,6 @@ const ProtonicFitnessApp = () => {
                 subscriptionTier: 'free', // Default, would come from backend in production
                 profile: response.profile,
                 stats: response.stats,
-                // Add demo data for features not yet in backend
                 level: 1,
                 xp: 0,
                 nextLevelXp: 1000,
@@ -460,7 +463,7 @@ const ProtonicFitnessApp = () => {
                 coins: 0,
                 achievements: 0,
                 workoutsCompleted: response.stats?.total_workouts || 0
-            };
+            });
 
             setUser(loggedInUser);
             setIsDemoMode(false);
@@ -477,8 +480,8 @@ const ProtonicFitnessApp = () => {
     };
 
     const handleDemoMode = () => {
-        // Create a demo/guest user
-        const demoUser = {
+        // Create a demo/guest user using helper function
+        const demoUser = createCompleteUser({
             id: 'demo',
             name: 'Demo User',
             email: 'demo@protonic.fitness',
@@ -515,8 +518,14 @@ const ProtonicFitnessApp = () => {
             recentBadges: [
                 { id: 1, name: 'First Week', icon: '🎯', earned: '3 days ago' },
                 { id: 2, name: 'Early Adopter', icon: '⭐', earned: '5 days ago' }
-            ]
-        };
+            ],
+            wearables: {
+                connected: ['Apple Watch'],
+                heartRate: 72,
+                steps: 5420,
+                activeMinutes: 45
+            }
+        });
 
         setUser(demoUser);
         setIsDemoMode(true);
