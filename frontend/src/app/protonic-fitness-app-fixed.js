@@ -1157,12 +1157,12 @@ const ProtonicFitnessApp = () => {
                         </div>
                         <div className="bg-white/5 rounded-xl p-3 text-center">
                             <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
-                            <p className="text-2xl font-bold">{user.wearables.heartRate}</p>
+                            <p className="text-2xl font-bold">{user.wearables?.heartRate}</p>
                             <p className="text-xs text-gray-400">Avg BPM</p>
                         </div>
                         <div className="bg-white/5 rounded-xl p-3 text-center">
                             <Zap className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-                            <p className="text-2xl font-bold">{user.wearables.steps}</p>
+                            <p className="text-2xl font-bold">{user.wearables?.steps}</p>
                             <p className="text-xs text-gray-400">Steps</p>
                         </div>
                     </div>
@@ -1176,7 +1176,7 @@ const ProtonicFitnessApp = () => {
                     </div>
                     <div className="bg-white/5 rounded-xl p-4">
                         <div className="flex items-end justify-between h-32 gap-2">
-                            {Object.entries(user.weeklyProgress).map(([day, calories]) => (
+                            {user.weeklyProgress && Object.entries(user.weeklyProgress).map(([day, calories]) => (
                                 <div key={day} className="flex-1 flex flex-col items-center gap-2">
                                     <div className="w-full bg-gradient-to-t from-cyan-500 to-purple-500 rounded-t-lg transition-all hover:opacity-80"
                                          style={{ height: `${(calories / 600) * 100}%`, minHeight: calories > 0 ? '8px' : '2px' }}>
@@ -1188,7 +1188,7 @@ const ProtonicFitnessApp = () => {
                         <div className="mt-4 text-center">
                             <p className="text-sm text-gray-400">Total calories this week</p>
                             <p className="text-2xl font-bold text-cyan-400">
-                                {Object.values(user.weeklyProgress).reduce((a, b) => a + b, 0).toLocaleString()} cal
+                                {user.weeklyProgress && Object.values(user.weeklyProgress).reduce((a, b) => a + b, 0).toLocaleString()} cal
                             </p>
                         </div>
                     </div>
@@ -1251,7 +1251,7 @@ const ProtonicFitnessApp = () => {
                                     <Activity className="w-6 h-6 text-cyan-400" />
                                 </div>
                                 <div>
-                                    <p className="font-bold">{user.wearables.connected[0]}</p>
+                                    <p className="font-bold">{user.wearables?.connected[0]}</p>
                                     <p className="text-sm text-green-400">● Connected</p>
                                 </div>
                             </div>
@@ -1260,15 +1260,15 @@ const ProtonicFitnessApp = () => {
                         <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/10">
                             <div>
                                 <p className="text-xs text-gray-400">Heart Rate</p>
-                                <p className="text-lg font-bold">{user.wearables.heartRate} BPM</p>
+                                <p className="text-lg font-bold">{user.wearables?.heartRate} BPM</p>
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">Steps Today</p>
-                                <p className="text-lg font-bold">{user.wearables.steps.toLocaleString()}</p>
+                                <p className="text-lg font-bold">{user.wearables?.steps.toLocaleString()}</p>
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">Active Min</p>
-                                <p className="text-lg font-bold">{user.wearables.activeMinutes}</p>
+                                <p className="text-lg font-bold">{user.wearables?.activeMinutes}</p>
                             </div>
                         </div>
                     </div>
