@@ -2,10 +2,18 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
     Activity,
     Award,
+    Bike,
     Camera,
+    ChevronRight,
+    Dumbbell,
+    Flame,
     Heart,
+    Menu,
     MessageCircle,
     Mic,
+    Moon,
+    Music,
+    Plus,
     Share2,
     Target,
     TrendingUp,
@@ -250,6 +258,92 @@ const ProtonicFitnessApp = () => {
         { id: 'motivated', name: 'Motivated', icon: '💪', color: 'from-green-500 to-teal-500' }
     ];
 
+    const mockUser = {
+        name: 'Alex',
+        level: 12,
+        xp: 3450,
+        nextLevelXp: 4000,
+        streak: 7,
+        thisWeek: 5,
+        totalWorkouts: 45,
+        coins: 850,
+        achievements: 23,
+        workoutsCompleted: 45,
+        stats: {
+            strength: 75,
+            endurance: 60,
+            flexibility: 45,
+            speed: 55
+        },
+        bodyMetrics: {
+            weight: 165,
+            bodyFat: 18,
+            muscleMass: 135,
+            restingHR: 62
+        },
+        personalRecords: [
+            { id: 1, name: 'Pushups', value: 45, unit: 'reps', date: '2025-01-15' },
+            { id: 2, name: 'Squats', value: 50, unit: 'reps', date: '2025-01-10' },
+            { id: 3, name: 'Plank', value: 180, unit: 'sec', date: '2025-01-12' }
+        ],
+        weeklyProgress: {
+            monday: 320,
+            tuesday: 450,
+            wednesday: 0,
+            thursday: 380,
+            friday: 520,
+            saturday: 290,
+            sunday: 0
+        },
+        personalBests: {
+            longestStreak: 21,
+            mostCaloriesDay: 847,
+            totalWorkouts: 45,
+            totalMinutes: 1847
+        },
+        recentBadges: [
+            { id: 1, name: 'Week Warrior', icon: '🔥', earned: '2 days ago' },
+            { id: 2, name: '50 Workouts', icon: '💪', earned: '1 week ago' },
+            { id: 3, name: 'Early Bird', icon: '🌅', earned: '2 weeks ago' }
+        ],
+        wearables: {
+            connected: ['Apple Watch'],
+            heartRate: 142,
+            steps: 8247,
+            activeMinutes: 67
+        }
+    };
+
+    const classCategories = [
+        { id: 1, name: 'Strength', count: 234, icon: Dumbbell, color: 'bg-zinc-800' },
+        { id: 2, name: 'Cardio', count: 189, icon: Activity, color: 'bg-zinc-800' },
+        { id: 3, name: 'Yoga', count: 156, icon: Users, color: 'bg-zinc-800' },
+        { id: 4, name: 'HIIT', count: 98, icon: Zap, color: 'bg-zinc-800' },
+        { id: 5, name: 'Cycling', count: 145, icon: Bike, color: 'bg-zinc-800' },
+        { id: 6, name: 'Meditation', count: 67, icon: Moon, color: 'bg-zinc-800' }
+    ];
+
+    const featuredClasses = [
+        {
+            id: 1,
+            title: '30 Min Full Body Strength',
+            instructor: 'Sarah Chen',
+            duration: '30 min',
+            level: 'Intermediate',
+            rating: 4.9,
+            color: 'bg-red-600'
+        },
+        {
+            id: 2,
+            title: '20 Min HIIT Cardio',
+            instructor: 'Marcus Pro',
+            duration: '20 min',
+            level: 'Advanced',
+            rating: 4.8,
+            color: 'bg-orange-500'
+        }
+    ];
+
     const challenges = [
         { id: 1, name: '30-Day Plank Challenge', participants: 1247, prize: '500 coins', progress: 12, total: 30 },
         { id: 2, name: 'Weekend Warrior', participants: 856, prize: 'Exclusive Badge', progress: 1, total: 2 },
@@ -330,17 +424,24 @@ const ProtonicFitnessApp = () => {
             xp: baseData.xp || 0,
             nextLevelXp: baseData.nextLevelXp || 1000,
             streak: baseData.streak || 0,
+            thisWeek: baseData.thisWeek || 0,
+            totalWorkouts: baseData.totalWorkouts || baseData.workoutsCompleted || 0,
             coins: baseData.coins || 0,
             achievements: baseData.achievements || 0,
             workoutsCompleted: baseData.workoutsCompleted || 0,
-            // Initialize wearables with defaults
+            bodyMetrics: baseData.bodyMetrics || {
+                weight: 0,
+                bodyFat: 0,
+                muscleMass: 0,
+                restingHR: 0
+            },
+            personalRecords: baseData.personalRecords || [],
             wearables: baseData.wearables || {
                 connected: [],
                 heartRate: 0,
                 steps: 0,
                 activeMinutes: 0
             },
-            // Initialize weeklyProgress with zeros
             weeklyProgress: baseData.weeklyProgress || {
                 monday: 0,
                 tuesday: 0,
@@ -350,35 +451,29 @@ const ProtonicFitnessApp = () => {
                 saturday: 0,
                 sunday: 0
             },
-            // Initialize personalBests with defaults
             personalBests: baseData.personalBests || {
                 longestStreak: 0,
                 mostCaloriesDay: 0,
                 totalWorkouts: 0,
                 totalMinutes: 0
             },
-            // Initialize recentBadges as empty array
             recentBadges: baseData.recentBadges || []
         };
     };
 
     const handleSignup = async () => {
-        // Clear any previous errors
         setSignupError('');
 
-        // Validate form fields
         if (!signupForm.name || !signupForm.email || !signupForm.password) {
             setSignupError('Please fill in all fields');
             return;
         }
 
-        // Validate password length
         if (signupForm.password.length < 8) {
             setSignupError('Password must be at least 8 characters');
             return;
         }
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(signupForm.email)) {
             setSignupError('Please enter a valid email address');
@@ -388,14 +483,12 @@ const ProtonicFitnessApp = () => {
         setIsSigningUp(true);
 
         try {
-            // Call backend registration API
             const response = await registerUser({
                 email: signupForm.email,
                 password: signupForm.password,
                 name: signupForm.name
             });
 
-            // Create user object with backend data using helper function
             const newUser = createCompleteUser({
                 id: response.user.id,
                 name: signupForm.name,
@@ -410,8 +503,6 @@ const ProtonicFitnessApp = () => {
 
             setUser(newUser);
             setCurrentScreen('pricing');
-
-            // Clear form
             setSignupForm({ name: '', email: '', password: '' });
         } catch (error) {
             console.error('Signup error:', error);
@@ -422,16 +513,13 @@ const ProtonicFitnessApp = () => {
     };
 
     const handleLogin = async () => {
-        // Clear any previous errors
         setLoginError('');
 
-        // Validate form fields
         if (!loginForm.email || !loginForm.password) {
             setLoginError('Please fill in all fields');
             return;
         }
 
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(loginForm.email)) {
             setLoginError('Please enter a valid email address');
@@ -441,19 +529,17 @@ const ProtonicFitnessApp = () => {
         setIsLoggingIn(true);
 
         try {
-            // Call backend login API
             const response = await loginUser({
                 email: loginForm.email,
                 password: loginForm.password
             });
 
-            // Create user object with backend data using helper function
             const loggedInUser = createCompleteUser({
                 id: response.user.id,
                 name: response.profile?.name || 'User',
                 email: response.user.email,
                 email_verified: response.user.email_verified,
-                subscriptionTier: 'free', // Default, would come from backend in production
+                subscriptionTier: 'free',
                 profile: response.profile,
                 stats: response.stats,
                 level: 1,
@@ -468,8 +554,6 @@ const ProtonicFitnessApp = () => {
             setUser(loggedInUser);
             setIsDemoMode(false);
             setCurrentScreen('home');
-
-            // Clear form
             setLoginForm({ email: '', password: '' });
         } catch (error) {
             console.error('Login error:', error);
@@ -480,53 +564,65 @@ const ProtonicFitnessApp = () => {
     };
 
     const handleDemoMode = () => {
-        // Create a demo/guest user using helper function
         const demoUser = createCompleteUser({
             id: 'demo',
-            name: 'Demo User',
+            name: 'Alex',
             email: 'demo@protonic.fitness',
             email_verified: false,
             subscriptionTier: 'free',
-            level: 5,
-            xp: 1250,
-            nextLevelXp: 2000,
-            streak: 3,
-            coins: 250,
-            achievements: 5,
-            workoutsCompleted: 12,
+            level: 12,
+            xp: 3450,
+            nextLevelXp: 4000,
+            streak: 7,
+            thisWeek: 5,
+            totalWorkouts: 45,
+            coins: 850,
+            achievements: 23,
+            workoutsCompleted: 45,
+            bodyMetrics: {
+                weight: 165,
+                bodyFat: 18,
+                muscleMass: 135,
+                restingHR: 62
+            },
+            personalRecords: [
+                { id: 1, name: 'Pushups', value: 45, unit: 'reps', date: '2025-01-15' },
+                { id: 2, name: 'Squats', value: 50, unit: 'reps', date: '2025-01-10' },
+                { id: 3, name: 'Plank', value: 180, unit: 'sec', date: '2025-01-12' }
+            ],
             stats: {
-                strength: 35,
-                endurance: 40,
-                flexibility: 25,
-                speed: 30
+                strength: 75,
+                endurance: 60,
+                flexibility: 45,
+                speed: 55
             },
             weeklyProgress: {
-                monday: 150,
-                tuesday: 200,
+                monday: 320,
+                tuesday: 450,
                 wednesday: 0,
-                thursday: 180,
-                friday: 0,
-                saturday: 0,
+                thursday: 380,
+                friday: 520,
+                saturday: 290,
                 sunday: 0
             },
             personalBests: {
-                longestStreak: 7,
-                mostCaloriesDay: 350,
-                totalWorkouts: 12,
-                totalMinutes: 480
+                longestStreak: 21,
+                mostCaloriesDay: 847,
+                totalWorkouts: 45,
+                totalMinutes: 1847
             },
             recentBadges: [
-                { id: 1, name: 'First Week', icon: '🎯', earned: '3 days ago' },
-                { id: 2, name: 'Early Adopter', icon: '⭐', earned: '5 days ago' }
+                { id: 1, name: 'Week Warrior', icon: '🔥', earned: '2 days ago' },
+                { id: 2, name: '50 Workouts', icon: '💪', earned: '1 week ago' },
+                { id: 3, name: 'Early Bird', icon: '🌅', earned: '2 weeks ago' }
             ],
             wearables: {
                 connected: ['Apple Watch'],
-                heartRate: 72,
-                steps: 5420,
-                activeMinutes: 45
+                heartRate: 142,
+                steps: 8247,
+                activeMinutes: 67
             }
         });
-
         setUser(demoUser);
         setIsDemoMode(true);
         setCurrentScreen('home');
@@ -914,7 +1010,6 @@ const ProtonicFitnessApp = () => {
                                     }}
                                     className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-all"
                                 />
-                                <p className="text-xs text-gray-400 mt-1">Must be at least 8 characters</p>
                             </div>
 
                             {signupError && (
@@ -1032,16 +1127,16 @@ const ProtonicFitnessApp = () => {
                         >
                             TRY IT
                         </button>
-                        <button
-                            onClick={() => setCurrentScreen('login')}
-                            className="w-full bg-transparent py-3 rounded-full font-semibold text-cyan-400 hover:text-cyan-300 transition-all"
-                        >
-                            Already have an account? Sign In
-                        </button>
                     </div>
 
                     <div className="mt-8 text-center text-sm text-gray-400 relative z-20">
                         <p>Join 500,000+ users worldwide</p>
+                        <button
+                            onClick={() => setCurrentScreen('login')}
+                            className="mt-2 text-cyan-400 font-semibold"
+                        >
+                            Already have an account? Sign In
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1051,7 +1146,7 @@ const ProtonicFitnessApp = () => {
     // Home Dashboard
     if (currentScreen === 'home') {
         return (
-            <div className="min-h-screen bg-slate-900 text-white">
+            <div className="min-h-screen bg-black text-white pb-24">
                 {/* Demo Mode Banner */}
                 {isDemoMode && (
                     <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-3 text-center">
@@ -1069,327 +1164,182 @@ const ProtonicFitnessApp = () => {
                 )}
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl">
-                    <div className="flex justify-between items-center mb-6">
+                <div className="px-4 pt-4 pb-2">
+                    <div className="flex justify-between items-start">
                         <div>
-                            <h2 className="text-2xl font-bold">Hey, {user.name}! 👋</h2>
-                            <p className="text-sm text-gray-300">Level {user.level} Warrior</p>
+                            <p className="text-gray-400 text-sm">Welcome back,</p>
+                            <h1 className="text-2xl font-bold">{user.name}</h1>
                         </div>
-                        <div className="flex gap-4">
-                            <div className="text-right">
-                                <p className="text-xs text-gray-300">Streak</p>
-                                <p className="text-xl font-bold">🔥 {user.streak}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-300">Coins</p>
-                                <p className="text-xl font-bold">💰 {user.coins}</p>
-                            </div>
-                        </div>
+                        <button className="p-2">
+                            <Menu className="w-6 h-6 text-gray-400" />
+                        </button>
                     </div>
+                </div>
 
-                    {/* XP Progress */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4">
-                        <div className="flex justify-between text-sm mb-2">
-                            <span>XP Progress</span>
-                            <span>{user.xp} / {user.nextLevelXp}</span>
+                {/* Stats Row */}
+                <div className="px-4 py-3">
+                    <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-zinc-900 rounded-xl p-4">
+                            <p className="text-3xl font-bold text-white">{user.streak}</p>
+                            <p className="text-xs text-gray-500">Day Streak</p>
                         </div>
-                        <div className="w-full bg-white/20 rounded-full h-3">
-                            <div
-                                className="bg-gradient-to-r from-cyan-400 to-purple-500 h-3 rounded-full transition-all"
-                                style={{ width: `${(user.xp / user.nextLevelXp) * 100}%` }}
-                            ></div>
+                        <div className="bg-zinc-900 rounded-xl p-4">
+                            <p className="text-3xl font-bold text-white">{user.thisWeek}</p>
+                            <p className="text-xs text-gray-500">This Week</p>
+                        </div>
+                        <div className="bg-zinc-900 rounded-xl p-4">
+                            <p className="text-3xl font-bold text-white">{user.totalWorkouts}</p>
+                            <p className="text-xs text-gray-500">Total</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Voice Control */}
-                <div className="p-6">
-                    <button
-                        onClick={handleWelcomeVoiceCommand}
-                        disabled={isListening}
-                        className={`w-full ${
-                            isListening
-                                ? 'bg-gradient-to-r from-red-500 to-pink-500'
-                                : 'bg-gradient-to-r from-cyan-500 to-purple-600'
-                        } py-6 rounded-2xl font-bold text-lg shadow-xl flex items-center justify-center gap-3 transition-all`}
-                    >
-                        <Mic className={`w-6 h-6 ${isListening ? 'animate-pulse' : ''}`} />
-                        {isListening ? 'Listening...' : 'Tap to Speak'}
-                    </button>
-
-                    {transcript && (
-                        <div className="mt-4 bg-white/5 rounded-xl p-4 border border-white/10">
-                            <p className="text-sm text-gray-300 italic">&#34;{transcript}&#34;</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Mood-Based Workouts */}
-                <div className="px-6 mb-6">
-                    <h3 className="text-lg font-bold mb-4">How are you feeling?</h3>
+                {/* Quick Actions */}
+                <div className="px-4 py-2">
                     <div className="grid grid-cols-2 gap-3">
-                        {moods.map(mood => (
-                            <button
-                                key={mood.id}
-                                onClick={() => startMoodBasedWorkout(mood)}
-                                className={`bg-gradient-to-r ${mood.color} p-4 rounded-xl text-center hover:scale-105 transition-all`}
-                            >
-                                <div className="text-3xl mb-2">{mood.icon}</div>
-                                <div className="font-bold">{mood.name}</div>
+                        <button className="bg-zinc-900 rounded-xl p-4 text-left">
+                            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mb-3">
+                                <Plus className="w-5 h-5 text-white" />
+                            </div>
+                            <p className="font-semibold text-white">Connect Wearable</p>
+                            <p className="text-xs text-gray-500">Track live metrics</p>
+                        </button>
+                        <button className="bg-zinc-900 rounded-xl p-4 text-left">
+                            <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mb-3">
+                                <TrendingUp className="w-5 h-5 text-white" />
+                            </div>
+                            <p className="font-semibold text-white">Import History</p>
+                            <p className="text-xs text-gray-500">From other apps</p>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Body Metrics */}
+                <div className="px-4 py-4">
+                    <h2 className="text-lg font-bold mb-3">Body Metrics</h2>
+                    <div className="bg-zinc-900 rounded-xl p-4">
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p className="text-xs text-gray-500 mb-1">Weight</p>
+                                <p className="text-2xl font-bold">{user.bodyMetrics.weight} <span className="text-sm font-normal text-gray-400">lbs</span></p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 mb-1">Body Fat</p>
+                                <p className="text-2xl font-bold text-red-500">{user.bodyMetrics.bodyFat}<span className="text-sm font-normal">%</span></p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 mb-1">Muscle Mass</p>
+                                <p className="text-2xl font-bold">{user.bodyMetrics.muscleMass} <span className="text-sm font-normal text-gray-400">lbs</span></p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 mb-1">Resting HR</p>
+                                <p className="text-2xl font-bold text-red-500">{user.bodyMetrics.restingHR} <span className="text-sm font-normal text-gray-400">bpm</span></p>
+                            </div>
+                        </div>
+                        <button className="w-full bg-zinc-800 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-zinc-700 transition-colors">
+                            Update Metrics
+                        </button>
+                    </div>
+                </div>
+
+                {/* Personal Records */}
+                <div className="px-4 py-2">
+                    <div className="flex justify-between items-center mb-3">
+                        <h2 className="text-lg font-bold">Personal Records</h2>
+                        <button className="text-red-500 text-sm font-medium">View All</button>
+                    </div>
+                    <div className="space-y-2">
+                        {user.personalRecords.map(record => (
+                            <div key={record.id} className="bg-zinc-900 rounded-xl p-4 flex justify-between items-center">
+                                <div>
+                                    <p className="font-semibold text-white">{record.name}</p>
+                                    <p className="text-xs text-gray-500">{record.date}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xl font-bold text-red-500">{record.value}</p>
+                                    <p className="text-xs text-gray-500">{record.unit}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Connect Music */}
+                <div className="px-4 py-4">
+                    <h2 className="text-lg font-bold mb-3">Connect Music</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        <button className="bg-zinc-900 rounded-xl p-4 flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors">
+                            <Music className="w-5 h-5 text-green-500" />
+                            <span className="font-medium">Spotify</span>
+                        </button>
+                        <button className="bg-zinc-900 rounded-xl p-4 flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors">
+                            <Music className="w-5 h-5 text-pink-500" />
+                            <span className="font-medium">Apple Music</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Browse Classes */}
+                <div className="px-4 py-2">
+                    <h2 className="text-lg font-bold mb-3">Browse Classes</h2>
+                    <div className="grid grid-cols-3 gap-3">
+                        {classCategories.map(category => {
+                            const IconComponent = category.icon;
+                            return (
+                                <button key={category.id} className="bg-zinc-900 rounded-xl p-4 text-center hover:bg-zinc-800 transition-colors">
+                                    <IconComponent className="w-6 h-6 mx-auto mb-2 text-gray-300" />
+                                    <p className="font-medium text-sm">{category.name}</p>
+                                    <p className="text-xs text-gray-500">{category.count}</p>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Featured Classes */}
+                <div className="px-4 py-4">
+                    <h2 className="text-lg font-bold mb-3">Featured Classes</h2>
+                    <div className="space-y-3">
+                        {featuredClasses.map(classItem => (
+                            <button key={classItem.id} className="w-full bg-zinc-900 rounded-xl p-4 flex items-center gap-4 hover:bg-zinc-800 transition-colors">
+                                <div className={`w-12 h-12 ${classItem.color} rounded-xl flex items-center justify-center`}>
+                                    <Flame className="w-6 h-6 text-white" />
+                                </div>
+                                <div className="flex-1 text-left">
+                                    <p className="font-semibold text-white">{classItem.title}</p>
+                                    <p className="text-sm text-gray-500">{classItem.instructor}</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-xs text-gray-400">{classItem.duration}</span>
+                                        <span className="text-xs text-gray-600">•</span>
+                                        <span className="text-xs text-gray-400">{classItem.level}</span>
+                                        <span className="text-xs text-gray-600">•</span>
+                                        <span className="text-xs text-yellow-500">★ {classItem.rating}</span>
+                                    </div>
+                                </div>
+                                <ChevronRight className="w-5 h-5 text-gray-600" />
                             </button>
                         ))}
                     </div>
                 </div>
 
-                {/* Quick Stats */}
-                <div className="px-6 mb-6">
-                    <h3 className="text-lg font-bold mb-4">Your Stats</h3>
-                    <div className="grid grid-cols-4 gap-3">
-                        <div className="bg-white/5 rounded-xl p-3 text-center">
-                            <Trophy className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-                            <p className="text-2xl font-bold">{user.achievements}</p>
-                            <p className="text-xs text-gray-400">Badges</p>
-                        </div>
-                        <div className="bg-white/5 rounded-xl p-3 text-center">
-                            <Target className="w-6 h-6 mx-auto mb-2 text-cyan-400" />
-                            <p className="text-2xl font-bold">{user.workoutsCompleted}</p>
-                            <p className="text-xs text-gray-400">Workouts</p>
-                        </div>
-                        <div className="bg-white/5 rounded-xl p-3 text-center">
-                            <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
-                            <p className="text-2xl font-bold">{user.wearables?.heartRate}</p>
-                            <p className="text-xs text-gray-400">Avg BPM</p>
-                        </div>
-                        <div className="bg-white/5 rounded-xl p-3 text-center">
-                            <Zap className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-                            <p className="text-2xl font-bold">{user.wearables?.steps}</p>
-                            <p className="text-xs text-gray-400">Steps</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Weekly Progress Chart */}
-                <div className="px-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold">Weekly Activity</h3>
-                        <button className="text-cyan-400 text-sm">View All</button>
-                    </div>
-                    <div className="bg-white/5 rounded-xl p-4">
-                        <div className="flex items-end justify-between h-32 gap-2">
-                            {user.weeklyProgress && Object.entries(user.weeklyProgress).map(([day, calories]) => (
-                                <div key={day} className="flex-1 flex flex-col items-center gap-2">
-                                    <div className="w-full bg-gradient-to-t from-cyan-500 to-purple-500 rounded-t-lg transition-all hover:opacity-80"
-                                         style={{ height: `${(calories / 600) * 100}%`, minHeight: calories > 0 ? '8px' : '2px' }}>
-                                    </div>
-                                    <span className="text-xs text-gray-400">{day.slice(0, 3)}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-4 text-center">
-                            <p className="text-sm text-gray-400">Total calories this week</p>
-                            <p className="text-2xl font-bold text-cyan-400">
-                                {user.weeklyProgress && Object.values(user.weeklyProgress).reduce((a, b) => a + b, 0).toLocaleString()} cal
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Personal Bests */}
-                <div className="px-6 mb-6">
-                    <h3 className="text-lg font-bold mb-4">Personal Bests 🏆</h3>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl p-4 border border-yellow-500/30">
-                            <p className="text-sm text-gray-300 mb-1">Longest Streak</p>
-                            <p className="text-3xl font-bold">{user.personalBests.longestStreak} days</p>
-                        </div>
-                        <div className="bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-xl p-4 border border-red-500/30">
-                            <p className="text-sm text-gray-300 mb-1">Most Calories</p>
-                            <p className="text-3xl font-bold">{user.personalBests.mostCaloriesDay}</p>
-                        </div>
-                        <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl p-4 border border-cyan-500/30">
-                            <p className="text-sm text-gray-300 mb-1">Total Minutes</p>
-                            <p className="text-3xl font-bold">{user.personalBests.totalMinutes.toLocaleString()}</p>
-                        </div>
-                        <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
-                            <p className="text-sm text-gray-300 mb-1">Workouts</p>
-                            <p className="text-3xl font-bold">{user.personalBests.totalWorkouts}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Recent Badges */}
-                <div className="px-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold">Recent Achievements</h3>
-                        <button className="text-cyan-400 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-3">
-                        {user.recentBadges.map(badge => (
-                            <div key={badge.id} className="bg-white/5 rounded-xl p-4 flex items-center gap-4">
-                                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-3xl">
-                                    {badge.icon}
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-bold">{badge.name}</p>
-                                    <p className="text-sm text-gray-400">Earned {badge.earned}</p>
-                                </div>
-                                <button className="bg-white/10 p-2 rounded-lg">
-                                    <Share2 className="w-5 h-5 text-cyan-400" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Wearable Integration */}
-                <div className="px-6 mb-6">
-                    <h3 className="text-lg font-bold mb-4">Connected Devices</h3>
-                    <div className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 rounded-xl p-4 border border-purple-500/30">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                                    <Activity className="w-6 h-6 text-cyan-400" />
-                                </div>
-                                <div>
-                                    <p className="font-bold">{user.wearables?.connected[0]}</p>
-                                    <p className="text-sm text-green-400">● Connected</p>
-                                </div>
-                            </div>
-                            <button className="text-cyan-400 text-sm">Settings</button>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/10">
-                            <div>
-                                <p className="text-xs text-gray-400">Heart Rate</p>
-                                <p className="text-lg font-bold">{user.wearables?.heartRate} BPM</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400">Steps Today</p>
-                                <p className="text-lg font-bold">{user.wearables?.steps.toLocaleString()}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400">Active Min</p>
-                                <p className="text-lg font-bold">{user.wearables?.activeMinutes}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button className="w-full mt-3 bg-white/5 py-3 rounded-xl font-bold border border-white/10 hover:bg-white/10 transition-all">
-                        + Connect Another Device
-                    </button>
-                </div>
-
-                {/* Live Trainers */}
-                <div className="px-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold">Live Trainers</h3>
-                        <button className="text-cyan-400 text-sm">View All</button>
-                    </div>
-                    <div className="space-y-3">
-                        {liveTrainers.slice(0, 2).map(trainer => (
-                            <div key={trainer.id} className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center font-bold">
-                                        {trainer.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <div className="font-bold flex items-center gap-2">
-                                            {trainer.name}
-                                            {trainer.available && <span className="w-2 h-2 bg-green-400 rounded-full"></span>}
-                                        </div>
-                                        <div className="text-sm text-gray-400">{trainer.specialty} • ⭐ {trainer.rating}</div>
-                                    </div>
-                                </div>
-                                <button className="bg-gradient-to-r from-cyan-500 to-purple-600 px-4 py-2 rounded-full text-sm font-bold">
-                                    {trainer.price}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Active Challenges */}
-                <div className="px-6 mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold">Active Challenges</h3>
-                        <button className="text-cyan-400 text-sm" onClick={() => setCurrentScreen('challenges')}>View All</button>
-                    </div>
-                    <div className="space-y-3">
-                        {challenges.slice(0, 2).map(challenge => (
-                            <div key={challenge.id} className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 rounded-xl p-4 border border-purple-500/30">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <div className="font-bold">{challenge.name}</div>
-                                        <div className="text-sm text-gray-400">{challenge.participants} participants</div>
-                                    </div>
-                                    <div className="text-yellow-400 font-bold text-sm">{challenge.prize}</div>
-                                </div>
-                                <div className="w-full bg-white/10 rounded-full h-2 mb-2">
-                                    <div
-                                        className="bg-gradient-to-r from-cyan-400 to-purple-500 h-2 rounded-full"
-                                        style={{ width: `${(challenge.progress / challenge.total) * 100}%` }}
-                                    ></div>
-                                </div>
-                                <div className="text-xs text-gray-400">{challenge.progress} / {challenge.total} days</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Social Feed */}
-                <div className="px-6 mb-24">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold">Community Feed</h3>
-                        <button className="text-cyan-400 text-sm" onClick={() => setCurrentScreen('social')}>See More</button>
-                    </div>
-                    <div className="space-y-3">
-                        {socialFeed.map(post => (
-                            <div key={post.id} className="bg-white/5 rounded-xl p-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"></div>
-                                    <div className="flex-1">
-                                        <div className="font-bold">{post.user}</div>
-                                        <div className="text-sm text-gray-400">{post.action}</div>
-                                    </div>
-                                    <div className="text-xs text-gray-500">{post.time}</div>
-                                </div>
-                                <div className="flex gap-4 text-sm text-gray-400">
-                                    <button className="flex items-center gap-1 hover:text-red-400">
-                                        <Heart className="w-4 h-4" /> {post.likes}
-                                    </button>
-                                    <button className="flex items-center gap-1 hover:text-cyan-400">
-                                        <MessageCircle className="w-4 h-4" /> Comment
-                                    </button>
-                                    <button className="flex items-center gap-1 hover:text-purple-400">
-                                        <Share2 className="w-4 h-4" /> Share
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Bottom Navigation */}
-                <div className="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-white/10 px-6 py-4">
+                <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 px-6 py-3">
                     <div className="flex justify-around">
-                        <button onClick={() => setCurrentScreen('home')} className="flex flex-col items-center text-cyan-400">
-                            <Activity className="w-6 h-6 mb-1" />
-                            <span className="text-xs">Home</span>
+                        <button onClick={() => setCurrentScreen('home')} className="flex flex-col items-center">
+                            <Activity className="w-6 h-6 mb-1 text-red-500" />
+                            <span className="text-xs text-red-500">Home</span>
                         </button>
-                        <button onClick={() => setCurrentScreen('challenges')} className="flex flex-col items-center text-gray-400">
-                            <Trophy className="w-6 h-6 mb-1" />
-                            <span className="text-xs">Challenges</span>
+                        <button onClick={() => setCurrentScreen('challenges')} className="flex flex-col items-center">
+                            <Trophy className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Challenges</span>
                         </button>
-                        <button onClick={handleWelcomeVoiceCommand} className="flex flex-col items-center -mt-8">
-                            <div className="bg-gradient-to-r from-cyan-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl">
-                                <Mic className="w-8 h-8" />
-                            </div>
+                        <button onClick={() => setCurrentScreen('social')} className="flex flex-col items-center">
+                            <Users className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Social</span>
                         </button>
-                        <button onClick={() => setCurrentScreen('social')} className="flex flex-col items-center text-gray-400">
-                            <Users className="w-6 h-6 mb-1" />
-                            <span className="text-xs">Social</span>
-                        </button>
-                        <button onClick={() => setCurrentScreen('profile')} className="flex flex-col items-center text-gray-400">
-                            <Target className="w-6 h-6 mb-1" />
-                            <span className="text-xs">Profile</span>
+                        <button onClick={() => setCurrentScreen('profile')} className="flex flex-col items-center">
+                            <Target className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Profile</span>
                         </button>
                     </div>
                 </div>
@@ -1400,42 +1350,64 @@ const ProtonicFitnessApp = () => {
     // Challenges Screen
     if (currentScreen === 'challenges') {
         return (
-            <div className="min-h-screen bg-slate-900 text-white pb-24">
-                <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl mb-6">
-                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-300">← Back</button>
-                    <h1 className="text-3xl font-bold mb-2">Challenges</h1>
-                    <p className="text-gray-300">Compete, win rewards, level up!</p>
+            <div className="min-h-screen bg-black text-white pb-24">
+                <div className="px-4 pt-4 pb-4">
+                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-400 text-sm">← Back</button>
+                    <h1 className="text-2xl font-bold mb-1">Challenges</h1>
+                    <p className="text-gray-500 text-sm">Compete, win rewards, level up!</p>
                 </div>
 
-                <div className="px-6 space-y-4">
+                <div className="px-4 space-y-3">
                     {challenges.map(challenge => (
-                        <div key={challenge.id} className="bg-gradient-to-r from-purple-900/50 to-cyan-900/50 rounded-xl p-5 border border-purple-500/30">
-                            <div className="flex justify-between items-start mb-4">
+                        <div key={challenge.id} className="bg-zinc-900 rounded-xl p-4">
+                            <div className="flex justify-between items-start mb-3">
                                 <div>
-                                    <h3 className="text-xl font-bold mb-1">{challenge.name}</h3>
-                                    <div className="text-sm text-gray-400">{challenge.participants.toLocaleString()} participants</div>
+                                    <h3 className="text-lg font-bold mb-1">{challenge.name}</h3>
+                                    <div className="text-xs text-gray-500">{challenge.participants.toLocaleString()} participants</div>
                                 </div>
-                                <div className="bg-yellow-500/20 px-3 py-1 rounded-full">
-                                    <span className="text-yellow-400 font-bold text-sm">{challenge.prize}</span>
+                                <div className="bg-zinc-800 px-3 py-1 rounded-full">
+                                    <span className="text-red-500 font-bold text-sm">{challenge.prize}</span>
                                 </div>
                             </div>
                             <div className="mb-3">
                                 <div className="flex justify-between text-sm mb-2">
-                                    <span>Progress</span>
+                                    <span className="text-gray-400">Progress</span>
                                     <span className="font-bold">{challenge.progress} / {challenge.total} days</span>
                                 </div>
-                                <div className="w-full bg-white/10 rounded-full h-3">
+                                <div className="w-full bg-zinc-800 rounded-full h-2">
                                     <div
-                                        className="bg-gradient-to-r from-cyan-400 to-purple-500 h-3 rounded-full transition-all"
+                                        className="bg-red-500 h-2 rounded-full transition-all"
                                         style={{ width: `${(challenge.progress / challenge.total) * 100}%` }}
                                     ></div>
                                 </div>
                             </div>
-                            <button className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-3 rounded-xl font-bold">
+                            <button className="w-full bg-zinc-800 py-3 rounded-xl font-medium text-white hover:bg-zinc-700 transition-colors">
                                 Continue Challenge
                             </button>
                         </div>
                     ))}
+                </div>
+
+                {/* Bottom Navigation */}
+                <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 px-6 py-3">
+                    <div className="flex justify-around">
+                        <button onClick={() => setCurrentScreen('home')} className="flex flex-col items-center">
+                            <Activity className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Home</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('challenges')} className="flex flex-col items-center">
+                            <Trophy className="w-6 h-6 mb-1 text-red-500" />
+                            <span className="text-xs text-red-500">Challenges</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('social')} className="flex flex-col items-center">
+                            <Users className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Social</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('profile')} className="flex flex-col items-center">
+                            <Target className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Profile</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -1444,55 +1416,77 @@ const ProtonicFitnessApp = () => {
     // Social Screen
     if (currentScreen === 'social') {
         return (
-            <div className="min-h-screen bg-slate-900 text-white pb-24">
-                <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl mb-6">
-                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-300">← Back</button>
-                    <h1 className="text-3xl font-bold mb-2">Community</h1>
-                    <p className="text-gray-300">Connect, compete, celebrate!</p>
+            <div className="min-h-screen bg-black text-white pb-24">
+                <div className="px-4 pt-4 pb-4">
+                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-400 text-sm">← Back</button>
+                    <h1 className="text-2xl font-bold mb-1">Community</h1>
+                    <p className="text-gray-500 text-sm">Connect, compete, celebrate!</p>
                 </div>
 
-                <div className="px-6">
-                    <div className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl p-4 mb-6 border border-cyan-500/30">
+                <div className="px-4">
+                    <div className="bg-zinc-900 rounded-xl p-4 mb-4">
                         <div className="flex items-center gap-3">
-                            <Camera className="w-8 h-8 text-cyan-400" />
+                            <Camera className="w-8 h-8 text-red-500" />
                             <div className="flex-1">
-                                <p className="font-bold">Share your workout</p>
-                                <p className="text-sm text-gray-400">Post progress, inspire others!</p>
+                                <p className="font-semibold">Share your workout</p>
+                                <p className="text-sm text-gray-500">Post progress, inspire others!</p>
                             </div>
-                            <button className="bg-gradient-to-r from-cyan-500 to-purple-600 px-4 py-2 rounded-full text-sm font-bold">
+                            <button className="bg-red-500 px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-600 transition-colors">
                                 Post
                             </button>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {socialFeed.map(post => (
-                            <div key={post.id} className="bg-white/5 rounded-xl p-5">
+                            <div key={post.id} className="bg-zinc-900 rounded-xl p-4">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"></div>
+                                    <div className="w-10 h-10 bg-zinc-700 rounded-full"></div>
                                     <div className="flex-1">
-                                        <div className="font-bold">{post.user}</div>
-                                        <div className="text-sm text-gray-400">{post.time}</div>
+                                        <div className="font-semibold">{post.user}</div>
+                                        <div className="text-xs text-gray-500">{post.time}</div>
                                     </div>
-                                    <button className="text-gray-400">•••</button>
+                                    <button className="text-gray-500">•••</button>
                                 </div>
-                                <p className="mb-4">{post.action}</p>
-                                <div className="flex gap-6 text-gray-400">
-                                    <button className="flex items-center gap-2 hover:text-red-400 transition-colors">
+                                <p className="mb-4 text-gray-300">{post.action}</p>
+                                <div className="flex gap-6 text-gray-500">
+                                    <button className="flex items-center gap-2 hover:text-red-500 transition-colors">
                                         <Heart className="w-5 h-5" />
                                         <span>{post.likes}</span>
                                     </button>
-                                    <button className="flex items-center gap-2 hover:text-cyan-400 transition-colors">
+                                    <button className="flex items-center gap-2 hover:text-gray-300 transition-colors">
                                         <MessageCircle className="w-5 h-5" />
                                         <span>Comment</span>
                                     </button>
-                                    <button className="flex items-center gap-2 hover:text-purple-400 transition-colors">
+                                    <button className="flex items-center gap-2 hover:text-gray-300 transition-colors">
                                         <Share2 className="w-5 h-5" />
                                         <span>Share</span>
                                     </button>
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+
+                {/* Bottom Navigation */}
+                <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 px-6 py-3">
+                    <div className="flex justify-around">
+                        <button onClick={() => setCurrentScreen('home')} className="flex flex-col items-center">
+                            <Activity className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Home</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('challenges')} className="flex flex-col items-center">
+                            <Trophy className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Challenges</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('social')} className="flex flex-col items-center">
+                            <Users className="w-6 h-6 mb-1 text-red-500" />
+                            <span className="text-xs text-red-500">Social</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('profile')} className="flex flex-col items-center">
+                            <Target className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Profile</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1502,37 +1496,37 @@ const ProtonicFitnessApp = () => {
     // Profile/Stats Screen
     if (currentScreen === 'profile') {
         return (
-            <div className="min-h-screen bg-slate-900 text-white pb-24">
-                <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl mb-6">
-                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-300">← Back</button>
+            <div className="min-h-screen bg-black text-white pb-24">
+                <div className="px-4 pt-4 pb-4">
+                    <button onClick={() => setCurrentScreen('home')} className="mb-4 text-gray-400 text-sm">← Back</button>
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="w-20 h-20 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center text-3xl font-bold">
+                        <div className="w-16 h-16 bg-zinc-700 rounded-full flex items-center justify-center text-2xl font-bold">
                             {user.name.charAt(0)}
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold">{user.name}</h1>
-                            <p className="text-gray-300">Level {user.level} Warrior</p>
-                            <div className="flex gap-4 mt-2">
-                                <span className="text-sm">🔥 {user.streak} day streak</span>
-                                <span className="text-sm">💰 {user.coins} coins</span>
+                            <h1 className="text-xl font-bold">{user.name}</h1>
+                            <p className="text-gray-500 text-sm">Level {user.level}</p>
+                            <div className="flex gap-3 mt-1">
+                                <span className="text-xs text-gray-400">{user.streak} day streak</span>
+                                <span className="text-xs text-gray-400">{user.coins} coins</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="px-6 space-y-6">
+                <div className="px-4 space-y-4">
                     <div>
-                        <h2 className="text-xl font-bold mb-4">Character Stats</h2>
-                        <div className="space-y-3">
+                        <h2 className="text-lg font-bold mb-3">Character Stats</h2>
+                        <div className="bg-zinc-900 rounded-xl p-4 space-y-3">
                             {Object.entries(user.stats).map(([stat, value]) => (
                                 <div key={stat}>
                                     <div className="flex justify-between text-sm mb-1">
-                                        <span className="capitalize">{stat}</span>
+                                        <span className="capitalize text-gray-400">{stat}</span>
                                         <span className="font-bold">{value}%</span>
                                     </div>
-                                    <div className="w-full bg-white/10 rounded-full h-2">
+                                    <div className="w-full bg-zinc-800 rounded-full h-2">
                                         <div
-                                            className="bg-gradient-to-r from-cyan-400 to-purple-500 h-2 rounded-full"
+                                            className="bg-red-500 h-2 rounded-full"
                                             style={{ width: `${value}%` }}
                                         ></div>
                                     </div>
@@ -1542,46 +1536,68 @@ const ProtonicFitnessApp = () => {
                     </div>
 
                     <div>
-                        <h2 className="text-xl font-bold mb-4">Recent Achievements</h2>
+                        <h2 className="text-lg font-bold mb-3">Recent Achievements</h2>
                         <div className="grid grid-cols-3 gap-3">
                             {[1,2,3,4,5,6].map(i => (
-                                <div key={i} className="bg-white/5 rounded-xl p-4 text-center">
-                                    <Award className="w-8 h-8 mx-auto mb-2 text-yellow-400" />
-                                    <p className="text-xs text-gray-400">Badge {i}</p>
+                                <div key={i} className="bg-zinc-900 rounded-xl p-4 text-center">
+                                    <Award className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+                                    <p className="text-xs text-gray-500">Badge {i}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <h2 className="text-xl font-bold mb-4">Weekly Summary</h2>
-                        <div className="bg-white/5 rounded-xl p-5 space-y-4">
+                        <h2 className="text-lg font-bold mb-3">Weekly Summary</h2>
+                        <div className="bg-zinc-900 rounded-xl p-4 space-y-3">
                             <div className="flex justify-between">
-                                <span className="text-gray-400">Workouts Completed</span>
+                                <span className="text-gray-500">Workouts Completed</span>
                                 <span className="font-bold">5</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-400">Total Calories Burned</span>
+                                <span className="text-gray-500">Total Calories Burned</span>
                                 <span className="font-bold">1,247</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-400">Active Minutes</span>
+                                <span className="text-gray-500">Active Minutes</span>
                                 <span className="font-bold">142 min</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-400">XP Earned</span>
-                                <span className="font-bold">+350</span>
+                                <span className="text-gray-500">XP Earned</span>
+                                <span className="font-bold text-red-500">+350</span>
                             </div>
                         </div>
                     </div>
 
-                    <button className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-4 rounded-xl font-bold text-lg">
+                    <button className="w-full bg-red-500 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors">
                         View Full Analytics
                     </button>
 
-                    <button className="w-full bg-white/5 py-4 rounded-xl font-bold border border-white/10">
+                    <button className="w-full bg-zinc-900 py-4 rounded-xl font-bold hover:bg-zinc-800 transition-colors">
                         Settings
                     </button>
+                </div>
+
+                {/* Bottom Navigation */}
+                <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 px-6 py-3">
+                    <div className="flex justify-around">
+                        <button onClick={() => setCurrentScreen('home')} className="flex flex-col items-center">
+                            <Activity className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Home</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('challenges')} className="flex flex-col items-center">
+                            <Trophy className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Challenges</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('social')} className="flex flex-col items-center">
+                            <Users className="w-6 h-6 mb-1 text-gray-500" />
+                            <span className="text-xs text-gray-500">Social</span>
+                        </button>
+                        <button onClick={() => setCurrentScreen('profile')} className="flex flex-col items-center">
+                            <Target className="w-6 h-6 mb-1 text-red-500" />
+                            <span className="text-xs text-red-500">Profile</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -1590,8 +1606,8 @@ const ProtonicFitnessApp = () => {
     // Workout Screen
     if (currentScreen === 'workout') {
         return (
-            <div className="min-h-screen bg-slate-900 text-white">
-                <div className="bg-gradient-to-r from-purple-900 to-cyan-900 p-6 rounded-b-3xl mb-6">
+            <div className="min-h-screen bg-black text-white">
+                <div className="px-4 pt-4 pb-4">
                     <button
                         onClick={() => {
                             setCurrentScreen('home');
@@ -1601,48 +1617,48 @@ const ProtonicFitnessApp = () => {
                             }
                             window.speechSynthesis.cancel();
                         }}
-                        className="mb-4 text-gray-300"
+                        className="mb-4 text-gray-400 text-sm"
                     >
                         ← Exit Workout
                     </button>
-                    <h1 className="text-3xl font-bold mb-2">
+                    <h1 className="text-2xl font-bold mb-1">
                         {selectedMood ? `${selectedMood.name} Workout` : 'Active Workout'}
                     </h1>
                     <div className="flex items-center gap-2">
                         {isVoiceActive ? (
                             <>
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <p className="text-green-400 text-sm font-bold">Voice Control Active - Just speak naturally!</p>
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <p className="text-green-500 text-sm">Voice Control Active</p>
                             </>
                         ) : (
-                            <p className="text-gray-300">Activating voice recognition...</p>
+                            <p className="text-gray-500 text-sm">Activating voice recognition...</p>
                         )}
                     </div>
                 </div>
 
-                <div className="px-6 space-y-6">
+                <div className="px-4 space-y-4">
                     {/* Live Camera Feed with Form Analysis */}
-                    <div className="relative aspect-video bg-gradient-to-br from-purple-900/50 to-cyan-900/50 rounded-2xl overflow-hidden border-2 border-cyan-500/50">
+                    <div className="relative aspect-video bg-zinc-900 rounded-xl overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Camera className="w-16 h-16 text-cyan-400 animate-pulse" />
+                            <Camera className="w-16 h-16 text-zinc-700 animate-pulse" />
                         </div>
                         <div className="absolute top-4 left-4 bg-red-500 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">
                             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                             {isRecording ? 'RECORDING' : 'LIVE'}
                         </div>
-                        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
+                        <div className="absolute top-4 right-4 bg-zinc-800 px-3 py-1 rounded-full text-xs font-medium">
                             AI Form Check: ON
                         </div>
                         {coachSpeaking && (
-                            <div className="absolute top-14 right-4 bg-purple-500/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2">
+                            <div className="absolute top-14 right-4 bg-red-500 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2">
                                 <Volume2 className="w-4 h-4 animate-pulse" />
                                 Coach Speaking
                             </div>
                         )}
-                        <div className="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-sm p-3 rounded-xl">
-                            <p className="text-sm text-green-400 font-bold">
+                        <div className="absolute bottom-4 left-4 right-4 bg-zinc-900/90 p-3 rounded-xl">
+                            <p className="text-sm text-green-500 font-medium">
                                 {isRecording
-                                    ? "✓ Recording your set! Keep that form perfect!"
+                                    ? "Recording your set! Keep that form perfect!"
                                     : "Ready to record. Say 'start set' to begin!"}
                             </p>
                         </div>
@@ -1650,43 +1666,43 @@ const ProtonicFitnessApp = () => {
 
                     {/* Voice Command Indicator */}
                     {lastVoiceCommand && (
-                        <div className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-xl p-4 border border-cyan-500/50">
+                        <div className="bg-zinc-900 rounded-xl p-4">
                             <div className="flex items-center gap-2">
-                                <Mic className="w-5 h-5 text-cyan-400" />
-                                <p className="text-sm text-gray-300">You said: <span className="text-white font-bold">&#34;{lastVoiceCommand}&#34;</span></p>
+                                <Mic className="w-5 h-5 text-red-500" />
+                                <p className="text-sm text-gray-400">You said: <span className="text-white font-bold">&#34;{lastVoiceCommand}&#34;</span></p>
                             </div>
                         </div>
                     )}
 
                     {/* Current Exercise Info */}
-                    <div className="bg-white/5 rounded-2xl p-6">
+                    <div className="bg-zinc-900 rounded-xl p-4">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <h3 className="text-2xl font-bold mb-1">Push-ups</h3>
-                                <p className="text-sm text-gray-400">Chest, Triceps, Shoulders</p>
+                                <h3 className="text-xl font-bold mb-1">Push-ups</h3>
+                                <p className="text-sm text-gray-500">Chest, Triceps, Shoulders</p>
                             </div>
                             <button
                                 onClick={givePreSetCoaching}
-                                className="bg-purple-500/20 px-4 py-2 rounded-full text-sm font-bold border border-purple-500/50 hover:bg-purple-500/30"
+                                className="bg-zinc-800 px-4 py-2 rounded-xl text-sm font-medium hover:bg-zinc-700 transition-colors"
                             >
                                 Coaching Tips
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4 mb-6">
-                            <div className="text-center bg-cyan-500/10 rounded-xl p-3 border border-cyan-500/30">
-                                <p className="text-3xl font-bold text-cyan-400">{repCount}</p>
-                                <p className="text-sm text-gray-400">Reps</p>
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="text-center bg-zinc-800 rounded-xl p-3">
+                                <p className="text-2xl font-bold text-red-500">{repCount}</p>
+                                <p className="text-xs text-gray-500">Reps</p>
                             </div>
-                            <div className="text-center bg-purple-500/10 rounded-xl p-3 border border-purple-500/30">
-                                <p className="text-3xl font-bold text-purple-400">{currentSet}/{totalSets}</p>
-                                <p className="text-sm text-gray-400">Set</p>
+                            <div className="text-center bg-zinc-800 rounded-xl p-3">
+                                <p className="text-2xl font-bold">{currentSet}/{totalSets}</p>
+                                <p className="text-xs text-gray-500">Set</p>
                             </div>
-                            <div className="text-center bg-green-500/10 rounded-xl p-3 border border-green-500/30">
-                                <p className="text-3xl font-bold text-green-400">
+                            <div className="text-center bg-zinc-800 rounded-xl p-3">
+                                <p className="text-2xl font-bold text-green-500">
                                     {isRecording ? '●' : '○'}
                                 </p>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-xs text-gray-500">
                                     {isRecording ? 'Recording' : 'Ready'}
                                 </p>
                             </div>
@@ -1702,8 +1718,8 @@ const ProtonicFitnessApp = () => {
                                 disabled={isRecording}
                                 className={`w-full py-4 rounded-xl font-bold text-lg ${
                                     isRecording
-                                        ? 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
+                                        ? 'bg-zinc-800 text-gray-500 cursor-not-allowed'
+                                        : 'bg-green-500 hover:bg-green-600 transition-colors'
                                 }`}
                             >
                                 {isRecording ? 'Recording Set...' : 'Start Set'}
@@ -1718,7 +1734,7 @@ const ProtonicFitnessApp = () => {
                                         speakCoachFeedback(`Moving to set ${currentSet + 1}. Take a moment to breathe and reset your form.`);
                                     }
                                 }}
-                                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 py-4 rounded-xl font-bold text-lg"
+                                className="w-full bg-red-500 py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors"
                             >
                                 Next Set
                             </button>
@@ -1726,58 +1742,47 @@ const ProtonicFitnessApp = () => {
                     </div>
 
                     {/* Voice Commands Help */}
-                    <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl p-5 border border-cyan-500/30">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Mic className="w-6 h-6 text-cyan-400" />
-                            <p className="font-bold text-lg">Voice Commands</p>
+                    <div className="bg-zinc-900 rounded-xl p-4">
+                        <div className="flex items-center gap-3 mb-3">
+                            <Mic className="w-5 h-5 text-red-500" />
+                            <p className="font-bold">Voice Commands</p>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-cyan-400 font-bold">&#34;Start set&#34;</p>
-                                <p className="text-gray-400 text-xs">Begin recording</p>
+                            <div className="bg-zinc-800 rounded-lg p-2">
+                                <p className="text-red-500 font-bold">&#34;Start set&#34;</p>
+                                <p className="text-gray-500 text-xs">Begin recording</p>
                             </div>
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-purple-400 font-bold">&#34;Next set&#34;</p>
-                                <p className="text-gray-400 text-xs">Move forward</p>
+                            <div className="bg-zinc-800 rounded-lg p-2">
+                                <p className="text-white font-bold">&#34;Next set&#34;</p>
+                                <p className="text-gray-500 text-xs">Move forward</p>
                             </div>
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-green-400 font-bold">&#34;Form check&#34;</p>
-                                <p className="text-gray-400 text-xs">Get coaching</p>
+                            <div className="bg-zinc-800 rounded-lg p-2">
+                                <p className="text-green-500 font-bold">&#34;Form check&#34;</p>
+                                <p className="text-gray-500 text-xs">Get coaching</p>
                             </div>
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-yellow-400 font-bold">&#34;How many&#34;</p>
-                                <p className="text-gray-400 text-xs">Rep count</p>
-                            </div>
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-red-400 font-bold">&#34;Stop&#34;</p>
-                                <p className="text-gray-400 text-xs">Pause set</p>
-                            </div>
-                            <div className="bg-white/5 rounded-lg p-2">
-                                <p className="text-orange-400 font-bold">&#34;Take a break&#34;</p>
-                                <p className="text-gray-400 text-xs">Rest time</p>
+                            <div className="bg-zinc-800 rounded-lg p-2">
+                                <p className="text-yellow-500 font-bold">&#34;How many&#34;</p>
+                                <p className="text-gray-500 text-xs">Rep count</p>
                             </div>
                         </div>
-                        <p className="text-xs text-gray-400 mt-3 text-center">
-                            💡 Just speak naturally - the AI coach is always listening
-                        </p>
                     </div>
 
                     {/* Live Metrics */}
                     <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <Heart className="w-6 h-6 mx-auto mb-2 text-red-400" />
+                        <div className="bg-zinc-900 rounded-xl p-4 text-center">
+                            <Heart className="w-6 h-6 mx-auto mb-2 text-red-500" />
                             <p className="text-2xl font-bold">142</p>
-                            <p className="text-xs text-gray-400">BPM</p>
+                            <p className="text-xs text-gray-500">BPM</p>
                         </div>
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <Zap className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                        <div className="bg-zinc-900 rounded-xl p-4 text-center">
+                            <Zap className="w-6 h-6 mx-auto mb-2 text-yellow-500" />
                             <p className="text-2xl font-bold">187</p>
-                            <p className="text-xs text-gray-400">Calories</p>
+                            <p className="text-xs text-gray-500">Calories</p>
                         </div>
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-400" />
+                        <div className="bg-zinc-900 rounded-xl p-4 text-center">
+                            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-green-500" />
                             <p className="text-2xl font-bold">+{repCount * 5}</p>
-                            <p className="text-xs text-gray-400">XP</p>
+                            <p className="text-xs text-gray-500">XP</p>
                         </div>
                     </div>
 
